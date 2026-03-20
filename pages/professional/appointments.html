@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Appointments - BellaBliss Pro</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-gray-900 text-white fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <a href="dashboard.html" class="text-xl font-bold">BellaBliss Pro</a>
+                    <div class="hidden md:flex space-x-4">
+                        <a href="dashboard.html" class="px-3 py-2 rounded hover:bg-gray-800">Dashboard</a>
+                        <a href="appointments.html" class="px-3 py-2 rounded hover:bg-gray-800">My Appointments</a>
+                        <a href="availability.html" class="px-3 py-2 rounded hover:bg-gray-800">Set Availability</a>
+                        
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="professionalName">Professional</span>
+                    <button onclick="logout()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <h1 class="text-2xl font-bold mb-6">My Appointments</h1>
+            
+            <!-- Filter Tabs -->
+            <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                <div class="flex flex-wrap gap-2">
+                    <button class="filter-btn active px-4 py-2 rounded-full bg-rose-600 text-white">All</button>
+                    <button class="filter-btn px-4 py-2 rounded-full border hover:bg-rose-50">Today</button>
+                    <button class="filter-btn px-4 py-2 rounded-full border hover:bg-rose-50">Upcoming</button>
+                    <button class="filter-btn px-4 py-2 rounded-full border hover:bg-rose-50">Completed</button>
+                    <button class="filter-btn px-4 py-2 rounded-full border hover:bg-rose-50">Cancelled</button>
+                </div>
+            </div>
+            
+            <!-- Appointments List -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Date</th>
+                                <th class="px-6 py-3 text-left">Time</th>
+                                <th class="px-6 py-3 text-left">Customer</th>
+                                <th class="px-6 py-3 text-left">Service</th>
+                                <th class="px-6 py-3 text-left">Location</th>
+                                <th class="px-6 py-3 text-left">Amount</th>
+                                <th class="px-6 py-3 text-left">Status</th>
+                                <th class="px-6 py-3 text-left">Payment</th>
+                                <th class="px-6 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsList" class="divide-y">
+                            <!-- Appointments will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

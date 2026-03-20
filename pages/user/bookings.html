@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - BellaBliss Studio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        h1, h2, h3, .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #e11d48, #f43f5e);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            color: #e11d48;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #e11d48, #f43f5e);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 30px -10px rgba(225, 29, 72, 0.5);
+        }
+        
+        .btn-outline {
+            border: 2px solid #e11d48;
+            color: #e11d48;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-outline:hover {
+            background: #e11d48;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e11d48;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-link {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+        
+        .sidebar-link:hover {
+            background: #fef2f2;
+            color: #e11d48;
+        }
+        
+        .sidebar-link.active {
+            background: #e11d48;
+            color: white;
+        }
+        
+        .booking-card {
+            transition: all 0.3s ease;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .booking-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 40px -20px rgba(225, 29, 72, 0.2);
+        }
+        
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-badge.confirmed {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-badge.pending {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+        
+        .status-badge.completed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-badge.cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #e11d48;
+            transition: width 0.3s ease;
+        }
+        
+        .tab-button.active::after {
+            width: 100%;
+        }
+        
+        .tab-button.active {
+            color: #e11d48;
+            font-weight: 600;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .calendar-day:hover {
+            background: #fef2f2;
+        }
+        
+        .calendar-day.has-booking {
+            background: #e11d48;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .calendar-day.today {
+            border: 2px solid #e11d48;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .calendar-grid {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation with Corrected Paths -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-lg fixed w-full z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo with Animation -->
+                <a href="../../index.html" class="text-3xl font-bold relative group" data-aos="fade-right">
+                    <span class="text-rose-600">Bella</span><span class="text-gray-800">Bliss</span>
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-rose-600 to-pink-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="../../index.html" class="nav-link text-gray-700 font-medium">Home</a>
+                    <a href="../products/products.html" class="nav-link text-gray-700 font-medium">Products</a>
+                    <a href="../services/services.html" class="nav-link text-gray-700 font-medium">Services</a>
+                    <a href="../../about.html" class="nav-link text-gray-700 font-medium">About</a>
+                    <a href="../../contact.html" class="nav-link text-gray-700 font-medium">Contact</a>
+                    
+                    <!-- Admin Link (hidden by default) -->
+                    <a href="../admin/dashboard.html" id="adminLink" class="nav-link text-gray-700 font-medium hidden">Admin</a>
+                    
+                    <!-- Professional Link (hidden by default) -->
+                    <a href="../professional/dashboard.html" id="professionalLink" class="nav-link text-gray-700 font-medium hidden">Dashboard</a>
+                    
+                    <!-- Cart Icon with Animation -->
+                    <div class="relative group">
+                        <a href="../products/cart.html" class="text-gray-700 hover:text-rose-600 transition relative">
+                            <i class="fas fa-shopping-cart text-2xl group-hover:scale-110 transition"></i>
+                            <span class="cart-count cart-badge">0</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Auth Buttons -->
+                    <div id="authButtons" class="flex items-center space-x-3">
+                        <a href="../auth/login.html" class="btn-primary !py-2 !px-6 text-sm">Login</a>
+                        <a href="../auth/register.html" class="btn-outline !py-2 !px-6 text-sm">Register</a>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div id="userMenu" class="relative hidden">
+                        <button onclick="toggleUserMenu()" class="flex items-center space-x-2 group">
+                            <div class="w-10 h-10 bg-gradient-to-r from-rose-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold group-hover:scale-110 transition">
+                                <span id="userInitials"></span>
+                            </div>
+                            <span id="userName" class="font-medium"></span>
+                            <i class="fas fa-chevron-down text-sm transition group-hover:rotate-180"></i>
+                        </button>
+                        
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl py-2 hidden">
+                            <a href="dashboard.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                                <i class="fas fa-dashboard w-6"></i> Dashboard
+                            </a>
+                            <a href="orders.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                                <i class="fas fa-shopping-bag w-6"></i> My Orders
+                            </a>
+                            <a href="bookings.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                                <i class="fas fa-calendar w-6"></i> My Bookings
+                            </a>
+                            <a href="profile.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                                <i class="fas fa-user w-6"></i> Profile
+                            </a>
+                            <hr class="my-2">
+                            <button onclick="logout()" class="block w-full text-left px-4 py-3 hover:bg-red-50 text-red-600 transition">
+                                <i class="fas fa-sign-out-alt w-6"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button class="lg:hidden text-gray-700" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-white border-t px-4 py-4">
+            <a href="../../index.html" class="block py-3 hover:text-rose-600">Home</a>
+            <a href="../products/products.html" class="block py-3 hover:text-rose-600">Products</a>
+            <a href="../services/services.html" class="block py-3 hover:text-rose-600">Services</a>
+            <a href="../../about.html" class="block py-3 hover:text-rose-600">About</a>
+            <a href="../../contact.html" class="block py-3 hover:text-rose-600">Contact</a>
+            <div class="flex space-x-3 py-3">
+                <a href="../auth/login.html" class="flex-1 btn-primary !py-2 text-center">Login</a>
+                <a href="../auth/register.html" class="flex-1 btn-outline !py-2 text-center">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="pt-32 pb-12 bg-gradient-to-r from-rose-600 to-pink-600">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">My Bookings</h1>
+            <p class="text-white/90">Manage your service appointments</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <!-- Check if user is logged in -->
+            <div id="authCheck" class="hidden text-center py-12">
+                <i class="fas fa-lock text-6xl text-gray-300 mb-4"></i>
+                <h2 class="text-2xl font-bold mb-2">Please Login</h2>
+                <p class="text-gray-600 mb-6">You need to be logged in to view your bookings</p>
+                <a href="../auth/login.html" class="btn-primary">Login Now</a>
+            </div>
+            
+            <!-- User Content (shown only when logged in) -->
+            <div id="userContent" class="hidden">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Sidebar -->
+                    <div class="lg:w-1/4">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24 sidebar">
+                            <div class="text-center mb-6">
+                                <div class="w-24 h-24 bg-gradient-to-r from-rose-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <span id="userInitialsSidebar" class="text-3xl text-white font-bold">JD</span>
+                                </div>
+                                <h3 id="userNameSidebar" class="font-bold text-xl">John Doe</h3>
+                                <p id="userEmailSidebar" class="text-gray-500 text-sm">john@example.com</p>
+                            </div>
+                            
+                            <nav class="space-y-2">
+                                <a href="dashboard.html" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                                    <i class="fas fa-dashboard w-5"></i>
+                                    <span>Dashboard</span>
+                                </a>
+                                <a href="order.html" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                                    <i class="fas fa-shopping-bag w-5"></i>
+                                    <span>My Orders</span>
+                                    <span id="orderCount" class="ml-auto bg-rose-100 text-rose-600 text-xs px-2 py-1 rounded-full">0</span>
+                                </a>
+                                <a href="bookings.html" class="sidebar-link active flex items-center space-x-3 px-4 py-3 rounded-lg">
+                                    <i class="fas fa-calendar w-5"></i>
+                                    <span>My Bookings</span>
+                                    <span id="bookingCount" class="ml-auto bg-rose-100 text-rose-600 text-xs px-2 py-1 rounded-full">0</span>
+                                </a>
+                                <a href="profile.html" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                                    <i class="fas fa-user w-5"></i>
+                                    <span>Profile</span>
+                                </a>
+                                <hr class="my-2">
+                                <button onclick="logout()" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 w-full">
+                                    <i class="fas fa-sign-out-alt w-5"></i>
+                                    <span>Logout</span>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+                    
+                    <!-- Bookings Content -->
+                    <div class="lg:w-3/4">
+                        <!-- Stats Cards -->
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+                            <div class="bg-white rounded-xl shadow p-4" data-aos="fade-up">
+                                <p class="text-gray-500 text-sm">Total Bookings</p>
+                                <p id="totalBookings" class="text-2xl font-bold">0</p>
+                            </div>
+                            <div class="bg-white rounded-xl shadow p-4" data-aos="fade-up" data-aos-delay="50">
+                                <p class="text-gray-500 text-sm">Upcoming</p>
+                                <p id="upcomingBookings" class="text-2xl font-bold text-blue-600">0</p>
+                            </div>
+                            <div class="bg-white rounded-xl shadow p-4" data-aos="fade-up" data-aos-delay="100">
+                                <p class="text-gray-500 text-sm">Completed</p>
+                                <p id="completedBookings" class="text-2xl font-bold text-green-600">0</p>
+                            </div>
+                            <div class="bg-white rounded-xl shadow p-4" data-aos="fade-up" data-aos-delay="150">
+                                <p class="text-gray-500 text-sm">Total Spent</p>
+                                <p id="totalSpent" class="text-2xl font-bold text-rose-600">$0</p>
+                            </div>
+                        </div>
+                        
+                        <!-- View Toggle -->
+                        <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
+                            <div class="flex gap-2">
+                                <button onclick="showListView()" class="px-4 py-2 bg-rose-600 text-white rounded-lg">List View</button>
+                                <button onclick="showCalendarView()" class="px-4 py-2 border rounded-lg hover:bg-rose-50">Calendar View</button>
+                            </div>
+                        </div>
+                        
+                        <!-- List View -->
+                        <div id="listView">
+                            <!-- Booking Tabs -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                                <div class="flex flex-wrap border-b gap-4">
+                                    <button class="tab-button active px-4 py-2 text-gray-600" onclick="filterBookings('all')">All Bookings</button>
+                                    <button class="tab-button px-4 py-2 text-gray-600" onclick="filterBookings('upcoming')">Upcoming</button>
+                                    <button class="tab-button px-4 py-2 text-gray-600" onclick="filterBookings('completed')">Completed</button>
+                                    <button class="tab-button px-4 py-2 text-gray-600" onclick="filterBookings('cancelled')">Cancelled</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Bookings List -->
+                            <div id="bookingsList" class="space-y-4">
+                                <!-- Bookings will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Calendar View (Hidden by default) -->
+                        <div id="calendarView" class="hidden bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold" id="currentMonthYear">March 2024</h3>
+                                <div class="flex gap-2">
+                                    <button onclick="previousMonth()" class="w-8 h-8 border rounded-lg hover:bg-rose-50">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button onclick="nextMonth()" class="w-8 h-8 border rounded-lg hover:bg-rose-50">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="calendar-grid mb-4">
+                                <div class="text-center font-semibold py-2">Sun</div>
+                                <div class="text-center font-semibold py-2">Mon</div>
+                                <div class="text-center font-semibold py-2">Tue</div>
+                                <div class="text-center font-semibold py-2">Wed</div>
+                                <div class="text-center font-semibold py-2">Thu</div>
+                                <div class="text-center font-semibold py-2">Fri</div>
+                                <div class="text-center font-semibold py-2">Sat</div>
+                            </div>
+                            
+                            <div id="calendarDays" class="calendar-grid">
+                                <!-- Calendar days will be loaded here -->
+                            </div>
+                            
+                            <div class="mt-6 space-y-2" id="calendarEvents">
+                                <!-- Events for selected day will be shown here -->
+                            </div>
+                        </div>
+                        
+                        <!-- No Bookings Message -->
+                        <div id="noBookings" class="hidden text-center py-12 bg-white rounded-2xl shadow-lg">
+                            <i class="fas fa-calendar-times text-6xl text-gray-300 mb-4"></i>
+                            <h3 class="text-xl font-semibold mb-2">No bookings yet</h3>
+                            <p class="text-gray-500 mb-6">Ready to treat yourself? Book a service now!</p>
+                            <a href="../services/services.html" class="btn-primary">Book a Service</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Details Modal -->
+    <div id="bookingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold">Booking Details</h3>
+                <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            
+            <div id="bookingDetailsContent" class="space-y-4">
+                <!-- Booking details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Reschedule Modal -->
+    <div id="rescheduleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold">Reschedule Booking</h3>
+                <button onclick="closeRescheduleModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            
+            <form id="rescheduleForm" onsubmit="handleReschedule(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Select New Date</label>
+                    <input type="date" id="newDate" class="w-full border rounded-lg px-4 py-3" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Select New Time</label>
+                    <select id="newTime" class="w-full border rounded-lg px-4 py-3" required>
+                        <option value="">Choose a time</option>
+                        <option value="9:00 AM">9:00 AM</option>
+                        <option value="10:00 AM">10:00 AM</option>
+                        <option value="11:00 AM">11:00 AM</option>
+                        <option value="12:00 PM">12:00 PM</option>
+                        <option value="1:00 PM">1:00 PM</option>
+                        <option value="2:00 PM">2:00 PM</option>
+                        <option value="3:00 PM">3:00 PM</option>
+                        <option value="4:00 PM">4:00 PM</option>
+                    </select>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeRescheduleModal()" class="flex-1 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 bg-rose-600 text-white px-4 py-3 rounded-lg hover:bg-rose-700">
+                        Confirm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer with Corrected Paths -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">Bella<span class="text-rose-600">Bliss</span></h3>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for premium beauty products and professional services.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="../../about.html" class="text-gray-400 hover:text-rose-400">About Us</a></li>
+                        <li><a href="../../contact.html" class="text-gray-400 hover:text-rose-400">Contact</a></li>
+                        <li><a href="../products/products.html" class="text-gray-400 hover:text-rose-400">Products</a></li>
+                        <li><a href="../services/services.html" class="text-gray-400 hover:text-rose-400">Services</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-rose-400">FAQs</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Customer Service</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Return Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Terms of Service</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact Info</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt mt-1"></i>
+                            <span>123 Beauty Lane, Kathmandu</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-phone"></i>
+                            <span>+977 9812345678</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-envelope"></i>
+                            <span>info@bellabliss.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="border-gray-800 my-8">
+            
+            <div class="text-center text-gray-400">
+                <p>&copy; 2024 BellaBliss Studio. All rights reserved. Made with <i class="fas fa-heart text-rose-600"></i> for beauty lovers</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        AOS.init();
+        
+        // Global variables
+        let currentUser = null;
+        let userBookings = [];
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let selectedBookingId = null;
+        
+        // Check authentication on page load
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                // Show login required message
+                document.getElementById('authCheck').classList.remove('hidden');
+                document.getElementById('userContent').classList.add('hidden');
+                return false;
+            }
+            
+            currentUser = JSON.parse(userStr);
+            
+            // Check if user is customer (not admin/professional)
+            if (currentUser.role !== 'customer') {
+                if (currentUser.role === 'admin') {
+                    window.location.href = '../admin/dashboard.html';
+                } else if (currentUser.role === 'professional') {
+                    window.location.href = '../professional/dashboard.html';
+                }
+                return false;
+            }
+            
+            // Show user content
+            document.getElementById('authCheck').classList.add('hidden');
+            document.getElementById('userContent').classList.remove('hidden');
+            
+            // Update UI with user info
+            updateUserInfo();
+            
+            // Load user bookings
+            loadUserBookings();
+            
+            return true;
+        }
+        
+        // Update user information in UI
+        function updateUserInfo() {
+            if (!currentUser) return;
+            
+            // Sidebar
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('userInitialsSidebar').textContent = initials.substring(0, 2);
+            document.getElementById('userNameSidebar').textContent = currentUser.name;
+            document.getElementById('userEmailSidebar').textContent = currentUser.email;
+            
+            // Top navigation
+            document.getElementById('authButtons').classList.add('hidden');
+            document.getElementById('userMenu').classList.remove('hidden');
+            document.getElementById('userName').textContent = currentUser.name.split(' ')[0];
+            document.getElementById('userInitials').textContent = initials.substring(0, 2);
+        }
+        
+        // Load user's bookings from localStorage
+        function loadUserBookings() {
+            if (!currentUser) return;
+            
+            // Get all bookings from localStorage
+            const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            
+            // Filter bookings for current user (by email)
+            userBookings = allBookings.filter(booking => 
+                booking.userEmail === currentUser.email
+            );
+            
+            // If no bookings, create sample bookings for demo
+            if (userBookings.length === 0) {
+                createSampleBookings();
+            } else {
+                displayBookings();
+                updateOrderCount();
+            }
+        }
+        
+        // Create sample bookings for demo (only for current user)
+        function createSampleBookings() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const nextWeek = new Date(now);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            
+            const lastWeek = new Date(now);
+            lastWeek.setDate(lastWeek.getDate() - 7);
+            
+            const sampleBookings = [
+                {
+                    id: 'BK-' + Date.now() + '-1',
+                    bookingId: 'BK-2024-001',
+                    userEmail: currentUser.email,
+                    userName: currentUser.name,
+                    service: 'Professional Makeup',
+                    serviceId: 'makeup',
+                    professional: 'Sarah Johnson',
+                    date: tomorrow.toISOString().split('T')[0],
+                    time: '10:00 AM',
+                    duration: '90 mins',
+                    location: 'Studio Visit',
+                    locationType: 'studio',
+                    price: 150,
+                    status: 'confirmed',
+                    paymentMethod: 'khalti',
+                    paymentStatus: 'paid',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 'BK-' + Date.now() + '-2',
+                    bookingId: 'BK-2024-002',
+                    userEmail: currentUser.email,
+                    userName: currentUser.name,
+                    service: 'Hair Styling',
+                    serviceId: 'hair',
+                    professional: 'Emily Davis',
+                    date: nextWeek.toISOString().split('T')[0],
+                    time: '2:00 PM',
+                    duration: '60 mins',
+                    location: 'Home Service',
+                    locationType: 'home',
+                    price: 100,
+                    status: 'pending',
+                    paymentMethod: 'cod',
+                    paymentStatus: 'pending',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 'BK-' + Date.now() + '-3',
+                    bookingId: 'BK-2024-003',
+                    userEmail: currentUser.email,
+                    userName: currentUser.name,
+                    service: 'Luxury Facial',
+                    serviceId: 'facial',
+                    professional: 'Mike Wilson',
+                    date: lastWeek.toISOString().split('T')[0],
+                    time: '11:00 AM',
+                    duration: '75 mins',
+                    location: 'Studio Visit',
+                    locationType: 'studio',
+                    price: 120,
+                    status: 'completed',
+                    paymentMethod: 'khalti',
+                    paymentStatus: 'paid',
+                    createdAt: new Date(lastWeek).toISOString()
+                }
+            ];
+            
+            // Save to localStorage
+            const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            sampleBookings.forEach(booking => allBookings.push(booking));
+            localStorage.setItem('bookings', JSON.stringify(allBookings));
+            
+            // Reload user bookings
+            userBookings = sampleBookings;
+            displayBookings();
+            updateOrderCount();
+        }
+        
+        // Display bookings
+        function displayBookings(filter = 'all') {
+            const bookingsList = document.getElementById('bookingsList');
+            const noBookings = document.getElementById('noBookings');
+            
+            let filteredBookings = userBookings;
+            
+            if (filter !== 'all') {
+                if (filter === 'upcoming') {
+                    filteredBookings = userBookings.filter(b => 
+                        b.status === 'confirmed' || b.status === 'pending'
+                    );
+                } else {
+                    filteredBookings = userBookings.filter(b => b.status === filter);
+                }
+            }
+            
+            if (filteredBookings.length === 0) {
+                bookingsList.innerHTML = '';
+                bookingsList.classList.add('hidden');
+                noBookings.classList.remove('hidden');
+                updateStats();
+                return;
+            }
+            
+            bookingsList.classList.remove('hidden');
+            noBookings.classList.add('hidden');
+            
+            // Sort by date (upcoming first)
+            filteredBookings.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            bookingsList.innerHTML = filteredBookings.map(booking => {
+                const bookingDate = new Date(booking.date);
+                const formattedDate = bookingDate.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                const isUpcoming = new Date(booking.date) >= new Date();
+                
+                return `
+                    <div class="booking-card bg-white rounded-2xl shadow-lg p-6" data-status="${booking.status}" data-date="${booking.date}">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div>
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="text-lg font-bold">${booking.bookingId}</span>
+                                    <span class="status-badge ${booking.status}">
+                                        <i class="fas ${booking.status === 'confirmed' ? 'fa-check-circle' : 
+                                                            booking.status === 'pending' ? 'fa-clock' :
+                                                            booking.status === 'completed' ? 'fa-check-double' : 'fa-times-circle'}"></i>
+                                        ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                    </span>
+                                </div>
+                                <h3 class="font-semibold text-lg">${booking.service}</h3>
+                                <p class="text-sm text-gray-500">with ${booking.professional}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-2xl font-bold text-rose-600">$${booking.price}</p>
+                                <p class="text-sm text-gray-500">${booking.paymentMethod === 'khalti' ? 'Paid Online' : 'Pay at Service'}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-xs text-gray-500">Date</p>
+                                <p class="font-semibold text-sm">${formattedDate}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Time</p>
+                                <p class="font-semibold text-sm">${booking.time}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Duration</p>
+                                <p class="font-semibold text-sm">${booking.duration}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Location</p>
+                                <p class="font-semibold text-sm">${booking.location}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t mt-4 pt-4 flex flex-wrap gap-3">
+                            <button onclick="viewBooking('${booking.id}')" class="flex-1 bg-rose-600 text-white px-4 py-2 rounded-lg hover:bg-rose-700 transition">
+                                View Details
+                            </button>
+                            ${booking.status === 'pending' || booking.status === 'confirmed' ?
+                                `<button onclick="rescheduleBooking('${booking.id}')" class="flex-1 border border-rose-600 text-rose-600 px-4 py-2 rounded-lg hover:bg-rose-50 transition">
+                                    Reschedule
+                                </button>` : ''
+                            }
+                            ${booking.status === 'pending' ?
+                                `<button onclick="cancelBooking('${booking.id}')" class="flex-1 border border-red-300 text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition">
+                                    Cancel
+                                </button>` : ''
+                            }
+                            ${booking.status === 'completed' ?
+                                `<button onclick="bookAgain('${booking.serviceId}')" class="flex-1 border border-rose-600 text-rose-600 px-4 py-2 rounded-lg hover:bg-rose-50 transition">
+                                    Book Again
+                                </button>` : ''
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            updateStats();
+            renderCalendar();
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const total = userBookings.length;
+            const upcoming = userBookings.filter(b => b.status === 'confirmed' || b.status === 'pending').length;
+            const completed = userBookings.filter(b => b.status === 'completed').length;
+            const totalSpent = userBookings
+                .filter(b => b.paymentStatus === 'paid')
+                .reduce((sum, b) => sum + b.price, 0);
+            
+            document.getElementById('totalBookings').textContent = total;
+            document.getElementById('upcomingBookings').textContent = upcoming;
+            document.getElementById('completedBookings').textContent = completed;
+            document.getElementById('totalSpent').textContent = '$' + totalSpent;
+            document.getElementById('bookingCount').textContent = total;
+        }
+        
+        // Update order count in sidebar
+        function updateOrderCount() {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const userOrders = orders.filter(o => o.customer && o.customer.email === currentUser.email);
+            document.getElementById('orderCount').textContent = userOrders.length;
+        }
+        
+        // Filter bookings by status
+        function filterBookings(status) {
+            // Update active tab
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayBookings(status);
+        }
+        
+        // View booking details
+        function viewBooking(bookingId) {
+            const booking = userBookings.find(b => b.id === bookingId);
+            if (!booking) return;
+            
+            const modal = document.getElementById('bookingModal');
+            const content = document.getElementById('bookingDetailsContent');
+            
+            const bookingDate = new Date(booking.date);
+            const formattedDate = bookingDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            content.innerHTML = `
+                <div class="bg-gradient-to-r from-rose-600 to-pink-600 text-white p-4 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm opacity-90">Booking ID</p>
+                            <p class="text-xl font-bold">${booking.bookingId}</p>
+                        </div>
+                        <span class="bg-white text-rose-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            ${booking.status}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Service</p>
+                        <p class="font-bold">${booking.service}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Professional</p>
+                        <p class="font-bold">${booking.professional}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Date</p>
+                        <p class="font-bold">${formattedDate}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Time</p>
+                        <p class="font-bold">${booking.time}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Duration</p>
+                        <p class="font-bold">${booking.duration}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Location</p>
+                        <p class="font-bold">${booking.location}</p>
+                    </div>
+                </div>
+                
+                <div class="border-t pt-4">
+                    <p class="font-bold mb-2">Payment Details</p>
+                    <div class="flex justify-between">
+                        <span>Service Price</span>
+                        <span>$${booking.price}</span>
+                    </div>
+                    <div class="flex justify-between text-lg font-bold mt-2">
+                        <span>Total</span>
+                        <span class="text-rose-600">$${booking.price}</span>
+                    </div>
+                    <div class="mt-2">
+                        <span class="text-sm text-gray-500">Payment Method: </span>
+                        <span class="font-semibold capitalize">${booking.paymentMethod}</span>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-500">Payment Status: </span>
+                        <span class="font-semibold ${booking.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600'}">
+                            ${booking.paymentStatus}
+                        </span>
+                    </div>
+                </div>
+                
+                ${booking.locationType === 'home' ? `
+                    <div class="border-t pt-4">
+                        <p class="font-bold mb-2">Service Address</p>
+                        <p class="text-gray-600">123 Main Street</p>
+                        <p class="text-gray-600">Kathmandu, Bagmati 44600</p>
+                    </div>
+                ` : `
+                    <div class="border-t pt-4">
+                        <p class="font-bold mb-2">Studio Address</p>
+                        <p class="text-gray-600">BellaBliss Studio</p>
+                        <p class="text-gray-600">123 Beauty Lane, Kathmandu</p>
+                    </div>
+                `}
+            `;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        // Close booking modal
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.add('hidden');
+            document.getElementById('bookingModal').classList.remove('flex');
+        }
+        
+        // Reschedule booking
+        function rescheduleBooking(bookingId) {
+            selectedBookingId = bookingId;
+            const modal = document.getElementById('rescheduleModal');
+            
+            // Set min date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('newDate').min = tomorrow.toISOString().split('T')[0];
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        // Handle reschedule form submission
+        function handleReschedule(event) {
+            event.preventDefault();
+            
+            const newDate = document.getElementById('newDate').value;
+            const newTime = document.getElementById('newTime').value;
+            
+            if (!newDate || !newTime) {
+                alert('Please select both date and time');
+                return;
+            }
+            
+            // Update booking in array
+            const bookingIndex = userBookings.findIndex(b => b.id === selectedBookingId);
+            if (bookingIndex !== -1) {
+                userBookings[bookingIndex].date = newDate;
+                userBookings[bookingIndex].time = newTime;
+                userBookings[bookingIndex].status = 'confirmed';
+                
+                // Update in localStorage
+                const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+                const masterIndex = allBookings.findIndex(b => b.id === selectedBookingId);
+                if (masterIndex !== -1) {
+                    allBookings[masterIndex].date = newDate;
+                    allBookings[masterIndex].time = newTime;
+                    allBookings[masterIndex].status = 'confirmed';
+                    localStorage.setItem('bookings', JSON.stringify(allBookings));
+                }
+                
+                alert('Booking rescheduled successfully!');
+                closeRescheduleModal();
+                displayBookings();
+            }
+        }
+        
+        // Close reschedule modal
+        function closeRescheduleModal() {
+            document.getElementById('rescheduleModal').classList.add('hidden');
+            document.getElementById('rescheduleModal').classList.remove('flex');
+            selectedBookingId = null;
+        }
+        
+        // Cancel booking
+        function cancelBooking(bookingId) {
+            if (confirm('Are you sure you want to cancel this booking?')) {
+                const bookingIndex = userBookings.findIndex(b => b.id === bookingId);
+                if (bookingIndex !== -1) {
+                    userBookings[bookingIndex].status = 'cancelled';
+                    
+                    // Update in localStorage
+                    const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+                    const masterIndex = allBookings.findIndex(b => b.id === bookingId);
+                    if (masterIndex !== -1) {
+                        allBookings[masterIndex].status = 'cancelled';
+                        localStorage.setItem('bookings', JSON.stringify(allBookings));
+                    }
+                    
+                    alert('Booking cancelled successfully');
+                    displayBookings();
+                }
+            }
+        }
+        
+        // Book again
+        function bookAgain(serviceId) {
+            window.location.href = `../services/booking.html?service=${serviceId}`;
+        }
+        
+        // View toggles
+        function showListView() {
+            document.getElementById('listView').classList.remove('hidden');
+            document.getElementById('calendarView').classList.add('hidden');
+        }
+        
+        function showCalendarView() {
+            document.getElementById('listView').classList.add('hidden');
+            document.getElementById('calendarView').classList.remove('hidden');
+            renderCalendar();
+        }
+        
+        // Calendar functions
+        function renderCalendar() {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            document.getElementById('currentMonthYear').textContent = 
+                `${monthNames[currentMonth]} ${currentYear}`;
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            const calendarDays = document.getElementById('calendarDays');
+            calendarDays.innerHTML = '';
+            
+            // Empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                calendarDays.innerHTML += '<div></div>';
+            }
+            
+            // Days of the month
+            const today = new Date();
+            const todayDate = today.getDate();
+            const todayMonth = today.getMonth();
+            const todayYear = today.getFullYear();
+            
+            // Get booking dates for current month
+            const bookingDates = userBookings
+                .filter(b => {
+                    const date = new Date(b.date);
+                    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+                })
+                .map(b => new Date(b.date).getDate());
+            
+            for (let d = 1; d <= daysInMonth; d++) {
+                const isToday = d === todayDate && currentMonth === todayMonth && currentYear === todayYear;
+                const hasBooking = bookingDates.includes(d);
+                
+                calendarDays.innerHTML += `
+                    <div class="calendar-day ${isToday ? 'today' : ''} ${hasBooking ? 'has-booking' : ''}" 
+                         onclick="showDayBookings(${d})">
+                        ${d}
+                    </div>
+                `;
+            }
+            
+            // Show events for today by default
+            showDayBookings(todayDate);
+        }
+        
+        function previousMonth() {
+            if (currentMonth === 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else {
+                currentMonth--;
+            }
+            renderCalendar();
+        }
+        
+        function nextMonth() {
+            if (currentMonth === 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else {
+                currentMonth++;
+            }
+            renderCalendar();
+        }
+        
+        function showDayBookings(day) {
+            const selectedDate = new Date(currentYear, currentMonth, day);
+            const dateStr = selectedDate.toISOString().split('T')[0];
+            
+            const dayBookings = userBookings.filter(b => b.date === dateStr);
+            
+            const eventsDiv = document.getElementById('calendarEvents');
+            
+            if (dayBookings.length === 0) {
+                eventsDiv.innerHTML = '<p class="text-gray-500 text-center py-4">No bookings for this day</p>';
+                return;
+            }
+            
+            eventsDiv.innerHTML = dayBookings.map(booking => `
+                <div class="flex items-center justify-between p-3 bg-rose-50 rounded-lg cursor-pointer hover:bg-rose-100"
+                     onclick="viewBooking('${booking.id}')">
+                    <div>
+                        <p class="font-semibold">${booking.service}</p>
+                        <p class="text-sm text-gray-600">${booking.time} • with ${booking.professional}</p>
+                    </div>
+                    <span class="status-badge ${booking.status} text-xs">
+                        ${booking.status}
+                    </span>
+                </div>
+            `).join('');
+        }
+        
+        // Toggle functions
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('hidden');
+        }
+        
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../../index.html';
+        }
+        
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.querySelectorAll('.cart-count').forEach(el => {
+                el.textContent = count;
+            });
+        }
+        
+        // Initialize
+        if (checkAuth()) {
+            updateCartCount();
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const userMenu = document.getElementById('userMenu');
+            
+            if (dropdown && userMenu && !userMenu.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

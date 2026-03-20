@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - BellaBliss Admin</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Admin Navigation (same as dashboard) -->
+    
+    <!-- Main Content -->
+    <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <h1 class="text-2xl font-bold mb-6">Manage Orders</h1>
+            
+            <!-- Filters -->
+            <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                <div class="grid md:grid-cols-4 gap-4">
+                    <select id="statusFilter" class="border rounded px-3 py-2">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    
+                    <select id="paymentFilter" class="border rounded px-3 py-2">
+                        <option value="">All Payments</option>
+                        <option value="pending">Pending</option>
+                        <option value="paid">Paid</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                    
+                    <input type="date" id="dateFilter" class="border rounded px-3 py-2">
+                    
+                    <button onclick="applyFilters()" class="bg-rose-600 text-white px-4 py-2 rounded hover:bg-rose-700">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Orders Table -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left">Order ID</th>
+                            <th class="px-6 py-3 text-left">Customer</th>
+                            <th class="px-6 py-3 text-left">Date</th>
+                            <th class="px-6 py-3 text-left">Total</th>
+                            <th class="px-6 py-3 text-left">Payment</th>
+                            <th class="px-6 py-3 text-left">Status</th>
+                            <th class="px-6 py-3 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody" class="divide-y">
+                        <!-- Orders will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div id="pagination" class="flex justify-center mt-6 space-x-2">
+                <!-- Pagination will be added here -->
+            </div>
+        </div>
+    </main>
+    
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Order Details</h3>
+                <button onclick="closeOrderModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="orderDetails" class="space-y-4">
+                <!-- Order details will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function viewOrder(orderId) {
+            document.getElementById('orderModal').classList.remove('hidden');
+            document.getElementById('orderModal').classList.add('flex');
+            // Load order details
+        }
+        
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.add('hidden');
+            document.getElementById('orderModal').classList.remove('flex');
+        }
+        
+        function updateOrderStatus(orderId) {
+            // Implement status update
+            alert('Update order status: ' + orderId);
+        }
+    </script>
+</body>
+</html>

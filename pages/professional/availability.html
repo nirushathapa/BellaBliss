@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Availability - BellaBliss Pro</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-gray-900 text-white fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <a href="dashboard.html" class="text-xl font-bold">BellaBliss Pro</a>
+                    <div class="hidden md:flex space-x-4">
+                        <a href="dashboard.html" class="px-3 py-2 rounded hover:bg-gray-800">Dashboard</a>
+                        <a href="appointments.html" class="px-3 py-2 rounded hover:bg-gray-800">My Appointments</a>
+                        <a href="availability.html" class="px-3 py-2 rounded hover:bg-gray-800">Set Availability</a>
+                        
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="professionalName">Professional</span>
+                    <button onclick="logout()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="pt-16">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <h1 class="text-2xl font-bold mb-6">Set Your Availability</h1>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <form id="availabilityForm" class="space-y-6">
+                    <!-- Weekly Schedule -->
+                    <div class="space-y-4">
+                        <h3 class="font-semibold">Weekly Schedule</h3>
+                        
+                        <!-- Monday -->
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded">
+                            <div class="w-24 font-medium">Monday</div>
+                            <input type="time" class="border rounded px-2 py-1" value="09:00">
+                            <span>to</span>
+                            <input type="time" class="border rounded px-2 py-1" value="18:00">
+                            <label class="flex items-center ml-4">
+                                <input type="checkbox" class="mr-2" checked>
+                                <span>Available</span>
+                            </label>
+                        </div>
+                        
+                        <!-- Tuesday -->
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded">
+                            <div class="w-24 font-medium">Tuesday</div>
+                            <input type="time" class="border rounded px-2 py-1" value="09:00">
+                            <span>to</span>
+                            <input type="time" class="border rounded px-2 py-1" value="18:00">
+                            <label class="flex items-center ml-4">
+                                <input type="checkbox" class="mr-2" checked>
+                                <span>Available</span>
+                            </label>
+                        </div>
+                        
+                        <!-- Add more days similarly -->
+                    </div>
+                    
+                    <!-- Break Time -->
+                    <div class="border-t pt-4">
+                        <h3 class="font-semibold mb-3">Break Time</h3>
+                        <div class="flex items-center space-x-4">
+                            <input type="time" class="border rounded px-2 py-1" value="13:00">
+                            <span>to</span>
+                            <input type="time" class="border rounded px-2 py-1" value="14:00">
+                        </div>
+                    </div>
+                    
+                    <!-- Special Dates -->
+                    <div class="border-t pt-4">
+                        <h3 class="font-semibold mb-3">Unavailable Dates</h3>
+                        <div id="unavailableDates" class="space-y-2">
+                            <!-- Dates will be added here -->
+                        </div>
+                        <button type="button" onclick="addUnavailableDate()" class="mt-2 text-rose-600 hover:text-rose-700">
+                            <i class="fas fa-plus mr-1"></i>Add Date
+                        </button>
+                    </div>
+                    
+                    <button type="submit" class="bg-rose-600 text-white px-6 py-2 rounded hover:bg-rose-700">
+                        Save Availability
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        function addUnavailableDate() {
+            const container = document.getElementById('unavailableDates');
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2';
+            div.innerHTML = `
+                <input type="date" class="border rounded px-2 py-1">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(div);
+        }
+    </script>
+</body>
+</html>

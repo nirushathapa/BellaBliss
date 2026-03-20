@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - BellaBliss Studio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .contact-info-card {
+            transition: transform 0.3s ease;
+        }
+        
+        .contact-info-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+     <nav class="bg-white/80 backdrop-blur-md shadow-lg fixed w-full z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo with Animation -->
+                <a href="index.html" class="text-3xl font-bold relative group" data-aos="fade-right">
+                    <span class="text-rose-600">Bella</span><span class="text-gray-800">Bliss</span>
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-rose-600 to-pink-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 font-medium">Home</a>
+                    <a href="pages/products/products.html" class="nav-link text-gray-700 font-medium">Products</a>
+                    <a href="pages/services/services.html" class="nav-link text-gray-700 font-medium">Services</a>
+                    <a href="about.html" class="nav-link text-gray-700 font-medium">About</a>
+                    <a href="contact.html" class="nav-link text-gray-700 font-medium">Contact</a>
+                    
+                    <!-- Admin Link (hidden by default) -->
+                    <a href="pages/admin/dashboard.html" id="adminLink" class="nav-link text-gray-700 font-medium hidden">Admin</a>
+                    
+                    <!-- Professional Link (hidden by default) -->
+                    <a href="pages/professional/dashboard.html" id="professionalLink" class="nav-link text-gray-700 font-medium hidden">Dashboard</a>
+                    
+                    <!-- Cart Icon with Animation -->
+                    <div class="relative group">
+                        <a href="pages/products/cart.html" class="text-gray-700 hover:text-rose-600 transition relative">
+                            <i class="fas fa-shopping-cart text-2xl group-hover:scale-110 transition"></i>
+                            <span class="cart-count cart-badge">0</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Auth Buttons -->
+                    <div id="authButtons" class="flex items-center space-x-3">
+                        <a href="pages/auth/login.html" class="btn-primary !py-2 !px-6 text-sm">Login</a>
+                        <a href="pages/auth/register.html" class="btn-outline !py-2 !px-6 text-sm">Register</a>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div id="userMenu" class="relative hidden">
+                        <button onclick="toggleUserMenu()" class="flex items-center space-x-2 group">
+                            <div class="w-10 h-10 bg-gradient-to-r from-rose-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold group-hover:scale-110 transition">
+                                <span id="userInitials"></span>
+                            </div>
+                            <span id="userName" class="font-medium"></span>
+                            <i class="fas fa-chevron-down text-sm transition group-hover:rotate-180"></i>
+                        </button>
+                        
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl py-2 hidden">
+                            <a href="pages/user/dashboard.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                                <i class="fas fa-dashboard w-6"></i> Dashboard
+                            </a>
+                            <a href="pages/user/order.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                                <i class="fas fa-shopping-bag w-6"></i> My Orders
+                            </a>
+                            <a href="pages/user/bookings.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                                <i class="fas fa-calendar w-6"></i> My Bookings
+                            </a>
+                            <a href="pages/user/profile.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                                <i class="fas fa-user w-6"></i> Profile
+                            </a>
+                            <hr class="my-2">
+                            <button onclick="logout()" class="block w-full text-left px-4 py-3 hover:bg-red-50 text-red-600 transition">
+                                <i class="fas fa-sign-out-alt w-6"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button class="lg:hidden text-gray-700" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-white border-t px-4 py-4">
+            <a href="index.html" class="block py-3 hover:text-rose-600">Home</a>
+            <a href="pages/products/products.html" class="block py-3 hover:text-rose-600">Products</a>
+            <a href="pages/services/services.html" class="block py-3 hover:text-rose-600">Services</a>
+            <a href="about.html" class="block py-3 hover:text-rose-600">About</a>
+            <a href="contact.html" class="block py-3 hover:text-rose-600">Contact</a>
+            <div class="flex space-x-3 py-3">
+                <a href="pages/auth/login.html" class="flex-1 btn-primary !py-2 text-center">Login</a>
+                <a href="pages/auth/register.html" class="flex-1 btn-outline !py-2 text-center">Register</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Page Header -->
+    <section class="pt-16 bg-gradient-to-r from-rose-600 to-pink-600 text-white">
+        <div class="container mx-auto px-4 py-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-center mb-4">Get In Touch</h1>
+            <p class="text-xl text-center max-w-3xl mx-auto">We'd love to hear from you</p>
+        </div>
+    </section>
+
+    <!-- Contact Information -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="contact-info-card bg-white rounded-lg shadow p-6 text-center">
+                    <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-phone text-2xl text-rose-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Phone</h3>
+                    <p class="text-gray-600">+977 9812345678</p>
+                    <p class="text-gray-600">Mon-Sat, 9am-8pm</p>
+                </div>
+                
+                <div class="contact-info-card bg-white rounded-lg shadow p-6 text-center">
+                    <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-envelope text-2xl text-rose-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Email</h3>
+                    <p class="text-gray-600">info@bellabliss.com</p>
+                    <p class="text-gray-600">support@bellabliss.com</p>
+                </div>
+                
+                <div class="contact-info-card bg-white rounded-lg shadow p-6 text-center">
+                    <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-map-marker-alt text-2xl text-rose-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Visit Us</h3>
+                    <p class="text-gray-600">123 Beauty</p>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-2xl font-bold mb-6">Send us a Message</h2>
+                    
+                    <form onsubmit="handleContactSubmit(event)">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Your Name</label>
+                            <input type="text" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-600">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Email Address</label>
+                            <input type="email" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-600">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Subject</label>
+                            <input type="text" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-600">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Message</label>
+                            <textarea rows="5" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-600"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-rose-600 text-white py-3 rounded-lg hover:bg-rose-700">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+                
+              
+                    
+                    <div class="mt-4">
+                        <p class="text-gray-600"><i class="fas fa-clock text-rose-600 mr-2"></i> Opening Hours:</p>
+                        <p class="text-gray-600 ml-6">Monday - Saturday: 9:00 AM - 8:00 PM</p>
+                        <p class="text-gray-600 ml-6">Sunday: Closed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="mb-4">
+                    <button class="faq-btn w-full text-left px-6 py-4 bg-gray-50 rounded-lg font-semibold flex justify-between items-center">
+                        <span>How do I place an order?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-content px-6 py-4 hidden">
+                        Simply browse our products, add items to cart, and proceed to checkout. You'll need to create an account or login first.
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <button class="faq-btn w-full text-left px-6 py-4 bg-gray-50 rounded-lg font-semibold flex justify-between items-center">
+                        <span>What payment methods do you accept?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-content px-6 py-4 hidden">
+                        We accept Khalti, credit/debit cards, and cash on delivery for local orders.
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <button class="faq-btn w-full text-left px-6 py-4 bg-gray-50 rounded-lg font-semibold flex justify-between items-center">
+                        <span>How can I book a service?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-content px-6 py-4 hidden">
+                        Visit our Services page, choose your service, select date/time, and confirm booking. Login required.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">Bella<span class="text-rose-600">Bliss</span></h3>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for premium beauty products and professional services.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="about.html" class="text-gray-400 hover:text-rose-400">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-400 hover:text-rose-400">Contact</a></li>
+                        <li><a href="pages/products/products.html" class="text-gray-400 hover:text-rose-400">Products</a></li>
+                        <li><a href="pages/services/services.html" class="text-gray-400 hover:text-rose-400">Services</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-rose-400">FAQs</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Customer Service</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Return Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Terms of Service</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact Info</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt mt-1"></i>
+                            <span>123 Beauty </span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-phone"></i>
+                            <span>+977 9812345678</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-envelope"></i>
+                            <span>info@bellabliss.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="border-gray-800 my-8">
+            
+            <div class="text-center text-gray-400">
+                <p>&copy; 2024 BellaBliss Studio. All rights reserved. Made with <i class="fas fa-heart text-rose-600"></i> for beauty lovers</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // FAQ Toggle
+        document.querySelectorAll('.faq-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                content.classList.toggle('hidden');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+        });
+        
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            alert('Thank you for your message! We\'ll get back to you soon.');
+            event.target.reset();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed - BellaBliss Studio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        h1, h2, h3, .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #e11d48, #f43f5e);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            color: #e11d48;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #e11d48, #f43f5e);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -8px rgba(225, 29, 72, 0.5);
+        }
+        
+        .btn-outline {
+            border: 2px solid #e11d48;
+            color: #e11d48;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-outline:hover {
+            background: #e11d48;
+            color: white;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e11d48;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .checkmark {
+            animation: scaleIn 0.5s ease;
+        }
+        
+        .confirmation-card {
+            transition: all 0.3s ease;
+        }
+        
+        .confirmation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px -10px rgba(225, 29, 72, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-lg fixed w-full z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="../../index.html" class="text-3xl font-bold relative group">
+                    <span class="text-rose-600">Bella</span><span class="text-gray-800">Bliss</span>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="../../index.html" class="nav-link text-gray-700 font-medium">Home</a>
+                    <a href="../products/products.html" class="nav-link text-gray-700 font-medium">Products</a>
+                    <a href="services.html" class="nav-link text-gray-700 font-medium">Services</a>
+                    <a href="../../about.html" class="nav-link text-gray-700 font-medium">About</a>
+                    <a href="../../contact.html" class="nav-link text-gray-700 font-medium">Contact</a>
+                    
+                    <!-- Cart Icon -->
+                    <div class="relative group">
+                        <a href="../products/cart.html" class="text-gray-700 hover:text-rose-600">
+                            <i class="fas fa-shopping-cart text-2xl"></i>
+                            <span class="cart-count cart-badge">0</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Auth Buttons -->
+                    <div id="authButtons" class="flex items-center space-x-3">
+                        <a href="../auth/login.html" class="btn-primary !py-2 !px-6 text-sm">Login</a>
+                        <a href="../auth/register.html" class="btn-outline !py-2 !px-6 text-sm">Register</a>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div id="userMenu" class="relative hidden">
+                        <button onclick="toggleUserMenu()" class="flex items-center space-x-2">
+                            <div class="w-10 h-10 bg-gradient-to-r from-rose-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold">
+                                <span id="userInitials"></span>
+                            </div>
+                            <span id="userName" class="font-medium"></span>
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </button>
+                        
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl py-2 hidden">
+                            <a href="../user/dashboard.html" class="block px-4 py-3 hover:bg-rose-50">Dashboard</a>
+                            <a href="../user/order.html" class="block px-4 py-3 hover:bg-rose-50">My Orders</a>
+                            <a href="../user/bookings.html" class="block px-4 py-3 hover:bg-rose-50">My Bookings</a>
+                            <a href="../user/profile.html" class="block px-4 py-3 hover:bg-rose-50">Profile</a>
+                            <hr class="my-2">
+                            <button onclick="logout()" class="block w-full text-left px-4 py-3 hover:bg-red-50 text-red-600">Logout</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button class="lg:hidden text-gray-700" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-white border-t px-4 py-4">
+            <a href="../../index.html" class="block py-3">Home</a>
+            <a href="../products/products.html" class="block py-3">Products</a>
+            <a href="services.html" class="block py-3">Services</a>
+            <a href="../../about.html" class="block py-3">About</a>
+            <a href="../../contact.html" class="block py-3">Contact</a>
+            <div class="flex space-x-3 py-3">
+                <a href="../auth/login.html" class="flex-1 btn-primary !py-2 text-center">Login</a>
+                <a href="../auth/register.html" class="flex-1 btn-outline !py-2 text-center">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Success Message -->
+    <section class="pt-32 pb-16 min-h-screen">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl mx-auto text-center">
+                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 checkmark">
+                    <i class="fas fa-check text-4xl text-green-600"></i>
+                </div>
+                
+                <h1 class="text-4xl font-bold mb-4">Booking Confirmed!</h1>
+                <p class="text-xl text-gray-600 mb-8">Your appointment has been scheduled</p>
+                
+                <div id="bookingDetails" class="bg-white rounded-2xl shadow-lg p-8 mb-8 text-left confirmation-card">
+                    <!-- Booking details will be loaded here -->
+                    <div class="text-center py-4">
+                        <i class="fas fa-spinner fa-spin text-3xl text-rose-600"></i>
+                        <p class="mt-2 text-gray-600">Loading booking details...</p>
+                    </div>
+                </div>
+                
+                <div id="noBooking" class="hidden bg-white rounded-2xl shadow-lg p-8 mb-8">
+                    <p class="text-gray-600">Booking not found. Please try again.</p>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 justify-center">
+                    <a href="services.html" class="btn-outline">Book Another Service</a>
+                    <a href="../user/bookings.html" class="btn-primary">View My Bookings</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center text-gray-400">
+                <p>&copy; 2024 BellaBliss Studio. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        AOS.init();
+        
+        // Load booking details from URL parameter
+        function loadBookingDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('id');
+            
+            console.log('Looking for booking ID:', bookingId); // Debug log
+            
+            if (!bookingId) {
+                document.getElementById('bookingDetails').classList.add('hidden');
+                document.getElementById('noBooking').classList.remove('hidden');
+                return;
+            }
+            
+            // Get booking from localStorage
+            const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            console.log('All bookings:', bookings); // Debug log
+            
+            const booking = bookings.find(b => b.id === bookingId || b.bookingId === bookingId);
+            
+            if (!booking) {
+                document.getElementById('bookingDetails').classList.add('hidden');
+                document.getElementById('noBooking').classList.remove('hidden');
+                return;
+            }
+            
+            console.log('Found booking:', booking); // Debug log
+            
+            const bookingDate = new Date(booking.date);
+            const formattedDate = bookingDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Display booking details
+            document.getElementById('bookingDetails').innerHTML = `
+                <div class="border-b pb-4 mb-4">
+                    <p class="text-gray-500 text-sm">Booking ID</p>
+                    <p class="text-2xl font-bold">${booking.bookingId || booking.id}</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-gray-500 text-sm">Service</p>
+                        <p class="font-semibold">${booking.service}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Professional</p>
+                        <p class="font-semibold">${booking.professional}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Date</p>
+                        <p class="font-semibold">${formattedDate}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Time</p>
+                        <p class="font-semibold">${booking.time}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Duration</p>
+                        <p class="font-semibold">${booking.duration}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Location</p>
+                        <p class="font-semibold">${booking.location}</p>
+                    </div>
+                </div>
+                
+                <div class="border-t mt-4 pt-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-600">Service Price:</span>
+                        <span class="font-semibold">${booking.price.toLocaleString()}</span>
+                    </div>
+                    ${booking.homeFee > 0 ? `
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Home Service Fee:</span>
+                            <span class="font-semibold">${booking.homeFee.toLocaleString()}</span>
+                        </div>
+                    ` : ''}
+                    <div class="flex justify-between text-lg font-bold border-t pt-2 mt-2">
+                        <span>Total:</span>
+                        <span class="text-rose-600">${booking.total.toLocaleString()}</span>
+                    </div>
+                </div>
+                
+                <div class="border-t mt-4 pt-4">
+                    <p class="text-sm text-gray-600">Payment Method: <span class="font-semibold capitalize">${booking.paymentMethod}</span></p>
+                    <p class="text-sm text-gray-600">Payment Status: <span class="font-semibold ${booking.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600'}">${booking.paymentStatus}</span></p>
+                    <p class="text-sm text-gray-600 mt-2">Confirmation sent to: <span class="font-semibold">${booking.userEmail}</span></p>
+                </div>
+            `;
+        }
+
+        // Check login status
+        function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                document.getElementById('authButtons').classList.add('hidden');
+                document.getElementById('userMenu').classList.remove('hidden');
+                document.getElementById('userName').textContent = user.name.split(' ')[0];
+                
+                const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('userInitials').textContent = initials.substring(0, 2);
+            }
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.querySelectorAll('.cart-count').forEach(el => {
+                el.textContent = count;
+            });
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('hidden');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../../index.html';
+        }
+
+        // Initialize
+        loadBookingDetails();
+        checkLoginStatus();
+        updateCartCount();
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const userMenu = document.getElementById('userMenu');
+            
+            if (dropdown && userMenu && !userMenu.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

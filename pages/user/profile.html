@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - BellaBliss Studio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: #f3f4f6;
+        }
+        
+        .profile-sidebar {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .avatar-large {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #e11d48, #f43f5e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 12px 16px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: #fef2f2;
+            color: #e11d48;
+        }
+        
+        .nav-link.active {
+            background: #e11d48;
+            color: white;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus,
+        .input-group textarea:focus {
+            border-color: #e11d48;
+            outline: none;
+        }
+        
+        .btn-save {
+            background: #e11d48;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-save:hover {
+            background: #be123c;
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            display: block;
+        }
+        
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            display: block;
+        }
+        
+        .readonly-field {
+            background: #f9fafb;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Simple Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <a href="../../index.html" class="text-2xl font-bold">
+                    <span class="text-rose-600">Bella</span><span class="text-gray-800">Bliss</span>
+                </a>
+                <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-20">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Sidebar -->
+                <div class="md:w-1/4">
+                    <div class="profile-sidebar">
+                        <!-- User Avatar -->
+                        <div class="avatar-large" id="userInitials">
+                            JD
+                        </div>
+                        
+                        <!-- User Info -->
+                        <div class="text-center mb-6">
+                            <h3 class="font-bold text-xl" id="userName">Loading...</h3>
+                            <p class="text-gray-500 text-sm" id="userEmail">loading...</p>
+                            <p class="text-xs text-gray-400 mt-2" id="userRole">Customer</p>
+                        </div>
+                        
+                        <!-- Navigation -->
+                        <nav>
+                            <a href="dashboard.html" class="nav-link">
+                                <i class="fas fa-dashboard w-6"></i> Dashboard
+                            </a>
+                            <a href="orders.html" class="nav-link">
+                                <i class="fas fa-shopping-bag w-6"></i> My Orders
+                            </a>
+                            <a href="bookings.html" class="nav-link">
+                                <i class="fas fa-calendar w-6"></i> My Bookings
+                            </a>
+                            <a href="profile.html" class="nav-link active">
+                                <i class="fas fa-user w-6"></i> My Profile
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+                
+                <!-- Profile Content -->
+                <div class="md:w-3/4">
+                    <div class="profile-card">
+                        <h2 class="text-2xl font-bold mb-6">My Profile</h2>
+                        
+                        <!-- Message Display -->
+                        <div id="message" class="message"></div>
+                        
+                        <!-- Profile Form -->
+                        <form id="profileForm" onsubmit="updateProfile(event)">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <!-- Full Name -->
+                                <div class="input-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="profileName" value="" required>
+                                </div>
+                                
+                                <!-- Email (Read Only) -->
+                                <div class="input-group">
+                                    <label>Email Address</label>
+                                    <input type="email" id="profileEmail" value="" class="readonly-field" readonly>
+                                </div>
+                                
+                                <!-- Phone -->
+                                <div class="input-group">
+                                    <label>Phone Number</label>
+                                    <input type="tel" id="profilePhone" value="" required>
+                                </div>
+                                
+                                <!-- Member Since -->
+                                <div class="input-group">
+                                    <label>Member Since</label>
+                                    <input type="text" id="profileJoined" value="" class="readonly-field" readonly>
+                                </div>
+                                
+                                <!-- Role (Read Only) -->
+                                <div class="input-group">
+                                    <label>Account Type</label>
+                                    <input type="text" id="profileRole" value="" class="readonly-field" readonly>
+                                </div>
+                                
+                                <!-- User ID (Read Only) -->
+                                <div class="input-group">
+                                    <label>User ID</label>
+                                    <input type="text" id="profileId" value="" class="readonly-field" readonly>
+                                </div>
+                            </div>
+                            
+                            <!-- Professional Fields (Hidden for customers) -->
+                            <div id="professionalFields" style="display: none;">
+                                <h3 class="font-bold text-lg mt-6 mb-4">Professional Details</h3>
+                                <div class="grid md:grid-cols-2 gap-6">
+                                    <div class="input-group">
+                                        <label>Specialization</label>
+                                        <input type="text" id="profileSpecialization" value="" class="readonly-field" readonly>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Experience</label>
+                                        <input type="text" id="profileExperience" value="" class="readonly-field" readonly>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>Bio</label>
+                                    <textarea id="profileBio" rows="4" class="readonly-field" readonly></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Save Button (Only for editable fields) -->
+                            <div class="mt-6">
+                                <button type="submit" class="btn-save">
+                                    <i class="fas fa-save mr-2"></i>
+                                    Update Profile
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                window.location.href = '../auth/login.html';
+                return null;
+            }
+            
+            return JSON.parse(userStr);
+        }
+
+        // Load user data
+        function loadUserData() {
+            const currentUser = checkAuth();
+            if (!currentUser) return;
+            
+            // Get full user data from registered_users
+            const allUsers = JSON.parse(localStorage.getItem('registered_users')) || [];
+            const userData = allUsers.find(u => u.email === currentUser.email);
+            
+            if (!userData) {
+                // If not found in registered_users, use session data
+                displayUserData(currentUser);
+            } else {
+                displayUserData(userData);
+            }
+        }
+
+        // Display user data in profile
+        function displayUserData(user) {
+            // Set initials
+            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('userInitials').textContent = initials.substring(0, 2);
+            
+            // Sidebar info
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userRole').textContent = user.role === 'professional' ? 'Professional' : 'Customer';
+            
+            // Profile form
+            document.getElementById('profileName').value = user.name || '';
+            document.getElementById('profileEmail').value = user.email || '';
+            document.getElementById('profilePhone').value = user.phone || '';
+            document.getElementById('profileRole').value = user.role === 'professional' ? 'Professional' : 'Customer';
+            document.getElementById('profileId').value = user.id || 'N/A';
+            
+            // Format join date
+            if (user.joined) {
+                const joinDate = new Date(user.joined);
+                document.getElementById('profileJoined').value = joinDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } else {
+                document.getElementById('profileJoined').value = 'N/A';
+            }
+            
+            // Show professional fields if applicable
+            if (user.role === 'professional') {
+                document.getElementById('professionalFields').style.display = 'block';
+                document.getElementById('profileSpecialization').value = user.specialization || 'Not specified';
+                document.getElementById('profileExperience').value = user.experience ? user.experience + ' years' : 'Not specified';
+                document.getElementById('profileBio').value = user.bio || 'No bio provided';
+            }
+        }
+
+        // Update profile
+        function updateProfile(event) {
+            event.preventDefault();
+            
+            const currentUser = checkAuth();
+            if (!currentUser) return;
+            
+            const name = document.getElementById('profileName').value;
+            const phone = document.getElementById('profilePhone').value;
+            const messageDiv = document.getElementById('message');
+            
+            // Get all users
+            const allUsers = JSON.parse(localStorage.getItem('registered_users')) || [];
+            
+            // Find and update current user
+            const userIndex = allUsers.findIndex(u => u.email === currentUser.email);
+            
+            if (userIndex !== -1) {
+                // Update user data
+                allUsers[userIndex].name = name;
+                allUsers[userIndex].phone = phone;
+                
+                // Save back to localStorage
+                localStorage.setItem('registered_users', JSON.stringify(allUsers));
+                
+                // Update session user
+                const sessionUser = {
+                    id: allUsers[userIndex].id,
+                    name: name,
+                    email: allUsers[userIndex].email,
+                    role: allUsers[userIndex].role,
+                    phone: phone
+                };
+                localStorage.setItem('user', JSON.stringify(sessionUser));
+                
+                // Show success message
+                messageDiv.className = 'message success';
+                messageDiv.textContent = 'Profile updated successfully!';
+                
+                // Update sidebar name
+                document.getElementById('userName').textContent = name;
+                
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../auth/login.html';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', loadUserData);
+    </script>
+</body>
+</html>

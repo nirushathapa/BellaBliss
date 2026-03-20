@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BellaBliss Studio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            border-color: #e11d48;
+            outline: none;
+        }
+        
+        .btn-login {
+            background: #e11d48;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-login:hover {
+            background: #be123c;
+        }
+        
+        .message {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            display: block;
+        }
+        
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            display: block;
+        }
+        
+        .admin-note {
+            background: #fef2f2;
+            border: 1px solid #e11d48;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .admin-note strong {
+            color: #e11d48;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <!-- Logo -->
+        <div class="text-center mb-6">
+            <a href="../../index.html" class="text-2xl font-bold">
+                <span class="text-rose-600">Bella</span><span class="text-gray-800">Bliss</span>
+            </a>
+            <h2 class="text-xl font-bold mt-4">Welcome Back</h2>
+            <p class="text-gray-500 text-sm">Sign in to your account</p>
+        </div>
+        
+        <!-- Admin Note -->
+        <div class="admin-note">
+            <!-- <p><strong>Admin:</strong> admin@bellabliss.com / admin123</p> -->
+            <p class="text-xs text-gray-500 mt-1">For customers & professionals: Use your registered email and password</p>
+        </div>
+        
+        <!-- Login Form -->
+        <form onsubmit="handleLogin(event)">
+            <!-- Email -->
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" placeholder="Email address" required>
+            </div>
+            
+            <!-- Password -->
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            
+            <!-- Message Display -->
+            <div id="message" class="message"></div>
+            
+            <!-- Login Button -->
+            <button type="submit" class="btn-login mb-4">
+                Sign In
+            </button>
+            
+            <!-- Register Links -->
+            <div class="text-center space-y-2 text-sm">
+                <p>
+                    New customer? 
+                    <a href="register.html?role=customer" class="text-rose-600 hover:text-rose-700 font-medium">
+                        Create account
+                    </a>
+                </p>
+                <p>
+                    New professional? 
+                    <a href="register.html?role=professional" class="text-rose-600 hover:text-rose-700 font-medium">
+                        Join as professional
+                    </a>
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            // Hide previous message
+            messageDiv.style.display = 'none';
+            
+            // Validate
+            if (!email || !password) {
+                showMessage('Please enter both email and password', 'error');
+                return;
+            }
+            
+            // Check admin
+            if (email === 'admin@bellabliss.com' && password === 'admin123') {
+                const adminUser = {
+                    name: 'Admin User',
+                    email: email,
+                    role: 'admin'
+                };
+                
+                localStorage.setItem('token', 'admin-token-' + Date.now());
+                localStorage.setItem('user', JSON.stringify(adminUser));
+                
+                window.location.href = '../admin/dashboard.html';
+                return;
+            }
+            
+            // Check registered users
+            const users = JSON.parse(localStorage.getItem('registered_users')) || [];
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Don't store password in session
+                const sessionUser = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    phone: user.phone
+                };
+                
+                localStorage.setItem('token', 'user-token-' + Date.now());
+                localStorage.setItem('user', JSON.stringify(sessionUser));
+                
+                // Show success message
+                showMessage('Login successful! Redirecting...', 'success');
+                
+                // Redirect based on role
+                setTimeout(() => {
+                    if (user.role === 'professional') {
+                        window.location.href = '../professional/dashboard.html';
+                    } else {
+                        window.location.href = '../../index.html';
+                    }
+                }, 1500);
+            } else {
+                // Check if email exists but password is wrong
+                const emailExists = users.some(u => u.email === email);
+                
+                if (emailExists) {
+                    showMessage('Incorrect password. Please try again.', 'error');
+                } else {
+                    showMessage('Email not found. Please register first.', 'error');
+                }
+            }
+        }
+        
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+        }
+        
+        // For demo: Show some test credentials
+        console.log('Test Accounts:');
+        console.log('Admin: admin@bellabliss.com / admin123');
+        console.log('Register new accounts to test customer/professional login');
+    </script>
+</body>
+</html>
