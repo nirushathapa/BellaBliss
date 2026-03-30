@@ -232,33 +232,50 @@
     <script>
         AOS.init();
         
+        const API_BASE_URL = 'http://localhost:5000/api';
+
         // Load booking details from URL parameter
-        function loadBookingDetails() {
+        async function loadBookingDetails() {
             const urlParams = new URLSearchParams(window.location.search);
             const bookingId = urlParams.get('id');
-            
-            console.log('Looking for booking ID:', bookingId); // Debug log
+            const token = localStorage.getItem('token');
             
             if (!bookingId) {
                 document.getElementById('bookingDetails').classList.add('hidden');
                 document.getElementById('noBooking').classList.remove('hidden');
                 return;
             }
-            
-            // Get booking from localStorage
-            const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-            console.log('All bookings:', bookings); // Debug log
-            
-            const booking = bookings.find(b => b.id === bookingId || b.bookingId === bookingId);
-            
-            if (!booking) {
+
+            if (!token) {
                 document.getElementById('bookingDetails').classList.add('hidden');
                 document.getElementById('noBooking').classList.remove('hidden');
                 return;
             }
-            
-            console.log('Found booking:', booking); // Debug log
-            
+
+            let booking;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    document.getElementById('bookingDetails').classList.add('hidden');
+                    document.getElementById('noBooking').classList.remove('hidden');
+                    return;
+                }
+
+                booking = result.data;
+            } catch (error) {
+                console.error('Failed to load booking details:', error);
+                document.getElementById('bookingDetails').classList.add('hidden');
+                document.getElementById('noBooking').classList.remove('hidden');
+                return;
+            }
+
             const bookingDate = new Date(booking.date);
             const formattedDate = bookingDate.toLocaleDateString('en-US', {
                 weekday: 'long',
@@ -271,7 +288,7 @@
             document.getElementById('bookingDetails').innerHTML = `
                 <div class="border-b pb-4 mb-4">
                     <p class="text-gray-500 text-sm">Booking ID</p>
-                    <p class="text-2xl font-bold">${booking.bookingId || booking.id}</p>
+                    <p class="text-2xl font-bold">${booking._id}</p>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">

@@ -477,6 +477,7 @@
         AOS.init();
         
         // Global variables
+        const API_BASE_URL = 'http://localhost:5000/api';
         let currentUser = null;
         let spendingChart = null;
         
@@ -539,18 +540,54 @@
         }
         
         // Load dashboard data
-        function loadDashboardData() {
-            // Get user's orders
-            const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-            const userOrders = allOrders.filter(order => 
-                order.customer && order.customer.email === currentUser.email
-            );
-            
-            // Get user's bookings
-            const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-            const userBookings = allBookings.filter(booking => 
-                booking.userEmail === currentUser.email
-            );
+        async function loadDashboardData() {
+            let userOrders = [];
+            let userBookings = [];
+
+            try {
+                const [ordersResponse, bookingsResponse] = await Promise.all([
+                    fetch(`${API_BASE_URL}/orders`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    }),
+                    fetch(`${API_BASE_URL}/bookings`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    })
+                ]);
+
+                const ordersResult = await ordersResponse.json();
+                const bookingsResult = await bookingsResponse.json();
+
+                if (ordersResponse.ok && ordersResult.success) {
+                    userOrders = (ordersResult.data || []).map(order => ({
+                        id: order._id,
+                        date: order.createdAt,
+                        createdAt: order.createdAt,
+                        items: order.items || [],
+                        total: Number(order.totalAmount) || 0,
+                        status: order.status
+                    }));
+                }
+
+                if (bookingsResponse.ok && bookingsResult.success) {
+                    userBookings = bookingsResult.data || [];
+                }
+            } catch (error) {
+                console.error('Failed to load user dashboard data:', error);
+            }
+
+            if (!userOrders.length) {
+                const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+                userOrders = allOrders.filter(order =>
+                    order.customer && order.customer.email === currentUser.email
+                );
+            }
+
+            if (!userBookings.length) {
+                const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+                userBookings = allBookings.filter(booking =>
+                    booking.userEmail === currentUser.email
+                );
+            }
             
             // Get wishlist (for demo, create some sample items)
             const wishlist = [
@@ -705,7 +742,7 @@
                                         </span>
                                     </td>
                                     <td class="py-3">
-                                        <a href="orders.html" class="text-rose-600 hover:text-rose-700 text-sm">
+                                        <a href="order.html" class="text-rose-600 hover:text-rose-700 text-sm">
                                             View
                                         </a>
                                     </td>

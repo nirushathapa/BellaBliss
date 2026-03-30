@@ -1,7 +1,7 @@
 // API Configuration
 const API_CONFIG = {
     baseURL: 'http://localhost:5000/api',
-    demoMode: true, // Set to false when backend is ready
+    demoMode: false,
     timeout: 10000
 };
 

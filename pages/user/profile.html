@@ -172,7 +172,7 @@
                             <a href="dashboard.html" class="nav-link">
                                 <i class="fas fa-dashboard w-6"></i> Dashboard
                             </a>
-                            <a href="orders.html" class="nav-link">
+                            <a href="order.html" class="nav-link">
                                 <i class="fas fa-shopping-bag w-6"></i> My Orders
                             </a>
                             <a href="bookings.html" class="nav-link">
@@ -280,21 +280,33 @@
             return JSON.parse(userStr);
         }
 
+        const API_BASE_URL = 'http://localhost:5000/api';
+
         // Load user data
-        function loadUserData() {
+        async function loadUserData() {
             const currentUser = checkAuth();
             if (!currentUser) return;
-            
-            // Get full user data from registered_users
-            const allUsers = JSON.parse(localStorage.getItem('registered_users')) || [];
-            const userData = allUsers.find(u => u.email === currentUser.email);
-            
-            if (!userData) {
-                // If not found in registered_users, use session data
-                displayUserData(currentUser);
-            } else {
-                displayUserData(userData);
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    localStorage.setItem('user', JSON.stringify(result.data));
+                    displayUserData(result.data);
+                    return;
+                }
+            } catch (error) {
+                console.error('Failed to load profile from backend:', error);
             }
+
+            displayUserData(currentUser);
         }
 
         // Display user data in profile
@@ -313,7 +325,7 @@
             document.getElementById('profileEmail').value = user.email || '';
             document.getElementById('profilePhone').value = user.phone || '';
             document.getElementById('profileRole').value = user.role === 'professional' ? 'Professional' : 'Customer';
-            document.getElementById('profileId').value = user.id || 'N/A';
+            document.getElementById('profileId').value = user.id || user._id || 'N/A';
             
             // Format join date
             if (user.joined) {
@@ -330,14 +342,14 @@
             // Show professional fields if applicable
             if (user.role === 'professional') {
                 document.getElementById('professionalFields').style.display = 'block';
-                document.getElementById('profileSpecialization').value = user.specialization || 'Not specified';
-                document.getElementById('profileExperience').value = user.experience ? user.experience + ' years' : 'Not specified';
-                document.getElementById('profileBio').value = user.bio || 'No bio provided';
+                document.getElementById('profileSpecialization').value = user.professionalDetails?.specialization?.join(', ') || 'Not specified';
+                document.getElementById('profileExperience').value = user.professionalDetails?.experience ? user.professionalDetails.experience + ' years' : 'Not specified';
+                document.getElementById('profileBio').value = user.professionalDetails?.bio || 'No bio provided';
             }
         }
 
         // Update profile
-        function updateProfile(event) {
+        async function updateProfile(event) {
             event.preventDefault();
             
             const currentUser = checkAuth();
@@ -347,40 +359,38 @@
             const phone = document.getElementById('profilePhone').value;
             const messageDiv = document.getElementById('message');
             
-            // Get all users
-            const allUsers = JSON.parse(localStorage.getItem('registered_users')) || [];
-            
-            // Find and update current user
-            const userIndex = allUsers.findIndex(u => u.email === currentUser.email);
-            
-            if (userIndex !== -1) {
-                // Update user data
-                allUsers[userIndex].name = name;
-                allUsers[userIndex].phone = phone;
-                
-                // Save back to localStorage
-                localStorage.setItem('registered_users', JSON.stringify(allUsers));
-                
-                // Update session user
-                const sessionUser = {
-                    id: allUsers[userIndex].id,
-                    name: name,
-                    email: allUsers[userIndex].email,
-                    role: allUsers[userIndex].role,
-                    phone: phone
-                };
-                localStorage.setItem('user', JSON.stringify(sessionUser));
-                
-                // Show success message
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, phone })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    messageDiv.className = 'message error';
+                    messageDiv.textContent = result.message || 'Failed to update profile';
+                    return;
+                }
+
+                localStorage.setItem('user', JSON.stringify(result.data));
                 messageDiv.className = 'message success';
                 messageDiv.textContent = 'Profile updated successfully!';
-                
-                // Update sidebar name
                 document.getElementById('userName').textContent = name;
-                
+
                 setTimeout(() => {
                     messageDiv.style.display = 'none';
                 }, 3000);
+            } catch (error) {
+                console.error('Profile update error:', error);
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Could not update profile right now.';
             }
         }
 

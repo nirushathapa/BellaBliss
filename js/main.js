@@ -1,6 +1,3 @@
-// API Configuration
-const API_URL = 'http://localhost:5000/api';
-
 // Check if user is logged in
 function isLoggedIn() {
     return localStorage.getItem('token') !== null;
@@ -79,6 +76,10 @@ function updateNavigation() {
         if (authButtons) authButtons.classList.add('hidden');
         if (userMenu) userMenu.classList.remove('hidden');
         if (userName) userName.textContent = user.name.split(' ')[0];
+        const userInitials = document.getElementById('userInitials');
+        if (userInitials) {
+            userInitials.textContent = user.name.split(' ').map(name => name[0]).join('').slice(0, 2).toUpperCase();
+        }
         
         // Show role-specific links
         if (user.role === 'admin' && adminLink) {
@@ -113,38 +114,56 @@ function updateCartCount() {
     });
 }
 
+function saveCartItem(product, quantity = 1) {
+    if (!product) {
+        return;
+    }
+
+    const normalizedProduct = {
+        id: product.id || product._id || product.slug,
+        slug: product.slug,
+        name: product.name,
+        price: Number(product.price),
+        image: product.image || product.images?.[0]?.url || '',
+        category: product.category || 'Beauty Product',
+        quantity
+    };
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existingItem = cart.find(item => item.id === normalizedProduct.id);
+
+    if (existingItem) {
+        existingItem.quantity += quantity;
+    } else {
+        cart.push(normalizedProduct);
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+}
+
 // Add to cart
-function addToCart(product) {
+function addToCart(product, quantity = 1) {
     if (!isLoggedIn()) {
         if (confirm('Please login to add items to cart')) {
             window.location.href = '/pages/auth/login.html';
         }
         return;
     }
-    
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-    const existingItem = cart.find(item => item.id === product.id);
-    
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            quantity: 1
-        });
-    }
-    
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
+
+    saveCartItem(product, quantity);
     alert('Product added to cart!');
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.AOS) {
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+    }
     updateNavigation();
     updateCartCount();
 });

@@ -197,7 +197,7 @@
                             <a href="../user/dashboard.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
                                 <i class="fas fa-dashboard w-6"></i> Dashboard
                             </a>
-                            <a href="../user/orders.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                            <a href="../user/order.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
                                 <i class="fas fa-shopping-bag w-6"></i> My Orders
                             </a>
                             <a href="../user/bookings.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
@@ -474,8 +474,10 @@
             }
         }
         
+        const API_BASE_URL = 'http://localhost:5000/api';
+
         // Handle checkout
-        function handleCheckout(event) {
+        async function handleCheckout(event) {
             event.preventDefault();
             
             // Check if user is logged in
@@ -508,43 +510,51 @@
             // Get cart items
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            
-            // Create order object
-            const order = {
-                id: 'ORD-' + Date.now(),
-                date: new Date().toISOString(),
-                customer: {
-                    name: firstName + ' ' + lastName,
-                    email: email,
-                    phone: phone
-                },
-                shipping: {
-                    address: address,
-                    city: city,
-                    state: state,
-                    zipCode: zipCode
-                },
-                items: cart,
-                subtotal: subtotal,
-                total: subtotal,
-                paymentMethod: paymentMethod,
-                status: 'pending'
-            };
-            
-            // Save order to localStorage (in real app, this would be sent to backend)
-            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-            orders.push(order);
-            localStorage.setItem('orders', JSON.stringify(orders));
-            
-            // Process payment based on method
-            if (paymentMethod === 'khalti') {
-                // Initialize Khalti payment
-                initiateKhaltiPayment(order);
-            } else {
-                // Cash on delivery
-                alert('Order placed successfully! You will pay upon delivery.');
-                localStorage.removeItem('cart');
-                window.location.href = 'order-success.html?id=' + order.id;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        items: cart.map(item => ({
+                            productId: item.id,
+                            quantity: item.quantity,
+                            price: item.price
+                        })),
+                        totalAmount: subtotal,
+                        shippingAddress: {
+                            fullName: `${firstName} ${lastName}`,
+                            street: address,
+                            city: city,
+                            state: state,
+                            zipCode: zipCode,
+                            phone: phone
+                        },
+                        paymentMethod: paymentMethod
+                    })
+                });
+
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    alert(result.message || 'Failed to place order');
+                    return;
+                }
+
+                const order = result.data;
+
+                if (paymentMethod === 'khalti') {
+                    initiateKhaltiPayment(order);
+                } else {
+                    alert('Order placed successfully! You will pay upon delivery.');
+                    localStorage.removeItem('cart');
+                    window.location.href = 'order-success.html?id=' + order._id;
+                }
+            } catch (error) {
+                console.error('Checkout error:', error);
+                alert('Could not place your order. Please try again.');
             }
         }
         
@@ -552,15 +562,14 @@
         function initiateKhaltiPayment(order) {
             const config = {
                 publicKey: 'test_public_key_dc74e0fd57cb46cd93832aee0a390234',
-                productIdentity: order.id,
+                productIdentity: order._id,
                 productName: 'BellaBliss Order',
                 productUrl: window.location.origin,
                 eventHandler: {
-                    onSuccess(payload) {
-                        // Payment successful
+                    onSuccess() {
                         alert('Payment successful!');
                         localStorage.removeItem('cart');
-                        window.location.href = 'order-success.html?id=' + order.id;
+                        window.location.href = 'order-success.html?id=' + order._id;
                     },
                     onError(error) {
                         console.error('Payment failed:', error);
@@ -568,11 +577,11 @@
                     }
                 },
                 paymentPreference: ["KHALTI", "EBANKING", "MOBILE_BANKING", "CONNECT_IPS", "SCT"],
-                amount: order.total * 100 // Convert to paisa
+                amount: order.totalAmount * 100 // Convert to paisa
             };
             
             const checkout = new KhaltiCheckout(config);
-            checkout.show({amount: order.total * 100});
+            checkout.show({amount: order.totalAmount * 100});
         }
         
         // Check login status

@@ -621,8 +621,10 @@
             });
         }
 
+        const API_BASE_URL = 'http://localhost:5000/api';
+
         // Handle booking submission
-        function handleBooking(event) {
+        async function handleBooking(event) {
             event.preventDefault();
             
             // Check if user is logged in
@@ -680,57 +682,57 @@
             const basePrice = currentService.price;
             const totalPrice = location === 'home' ? basePrice + 1000 : basePrice;
             
-            // Create booking object
-            const booking = {
-                id: 'BK-' + Date.now(),
-                bookingId: 'BK-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000),
-                userId: user.id || user.email,
-                userEmail: user.email,
-                userName: user.name,
-                userPhone: user.phone || 'Not provided',
-                serviceId: serviceId,
-                service: currentService.name,
-                professional: professional,
-                date: date,
-                time: selectedTime,
-                duration: currentService.duration,
-                location: location === 'studio' ? 'Studio Visit' : 'Home Service',
-                locationType: location,
-                address: location === 'home' ? {
-                    street: document.getElementById('streetAddress').value,
-                    city: document.getElementById('city').value,
-                    area: document.getElementById('area').value,
-                    instructions: document.getElementById('instructions').value
-                } : null,
-                price: basePrice,
-                homeFee: location === 'home' ? 1000 : 0,
-                total: totalPrice,
-                status: 'pending',
-                paymentMethod: paymentMethod,
-                paymentStatus: 'pending',
-                createdAt: new Date().toISOString()
-            };
-            
-            // Save to localStorage (bookings collection)
-            const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-            bookings.push(booking);
-            localStorage.setItem('bookings', JSON.stringify(bookings));
-            
-            // Mark slot as booked
-            const bookedSlots = JSON.parse(localStorage.getItem('booked_slots')) || {};
-            if (!bookedSlots[date]) {
-                bookedSlots[date] = [];
-            }
-            bookedSlots[date].push(selectedTime);
-            localStorage.setItem('booked_slots', JSON.stringify(bookedSlots));
-            
-            // Handle payment
-            if (paymentMethod === 'khalti') {
-                initiateKhaltiPayment(booking);
-            } else {
-                // Cash on delivery
-                alert('Booking confirmed! You will pay at the service.');
-                window.location.href = 'booking-confrimation.html?id=' + booking.id;
+            try {
+                const response = await fetch(`${API_BASE_URL}/bookings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        userEmail: user.email,
+                        userName: user.name,
+                        userPhone: user.phone || 'Not provided',
+                        serviceId: serviceId,
+                        service: currentService.name,
+                        professional: professional,
+                        date: date,
+                        time: selectedTime,
+                        duration: currentService.duration,
+                        location: location === 'studio' ? 'Studio Visit' : 'Home Service',
+                        locationType: location,
+                        address: location === 'home' ? {
+                            street: document.getElementById('streetAddress').value,
+                            city: document.getElementById('city').value,
+                            area: document.getElementById('area').value,
+                            instructions: document.getElementById('instructions').value
+                        } : null,
+                        price: basePrice,
+                        homeFee: location === 'home' ? 1000 : 0,
+                        total: totalPrice,
+                        status: paymentMethod === 'khalti' ? 'pending' : 'confirmed',
+                        paymentMethod: paymentMethod,
+                        paymentStatus: paymentMethod === 'khalti' ? 'pending' : 'pending'
+                    })
+                });
+
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    alert(result.message || 'Failed to create booking');
+                    return;
+                }
+
+                const booking = result.data;
+
+                if (paymentMethod === 'khalti') {
+                    initiateKhaltiPayment(booking);
+                } else {
+                    alert('Booking confirmed! You will pay at the service.');
+                    window.location.href = 'booking-confrimation.html?id=' + booking._id;
+                }
+            } catch (error) {
+                console.error('Booking error:', error);
+                alert('Could not create booking. Please try again.');
             }
         }
 
@@ -738,22 +740,13 @@
         function initiateKhaltiPayment(booking) {
             const config = {
                 publicKey: 'test_public_key_dc74e0fd57cb46cd93832aee0a390234',
-                productIdentity: booking.id,
+                productIdentity: booking._id,
                 productName: booking.service,
                 productUrl: window.location.origin,
                 eventHandler: {
-                    onSuccess(payload) {
-                        // Update payment status
-                        const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-                        const bookingIndex = bookings.findIndex(b => b.id === booking.id);
-                        if (bookingIndex !== -1) {
-                            bookings[bookingIndex].paymentStatus = 'paid';
-                            bookings[bookingIndex].status = 'confirmed';
-                            localStorage.setItem('bookings', JSON.stringify(bookings));
-                        }
-                        
+                    onSuccess() {
                         alert('Payment successful! Booking confirmed.');
-                        window.location.href = 'booking-confrimation.html?id=' + booking.id;
+                        window.location.href = 'booking-confrimation.html?id=' + booking._id;
                     },
                     onError(error) {
                         console.error('Payment failed:', error);

@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Login - BellaBliss Studio</title>
     
     <!-- Tailwind CSS -->
@@ -107,9 +110,26 @@
             font-size: 0.9rem;
         }
         
-        .admin-note strong {
-            color: #e11d48;
+        .demo-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
         }
+        
+        .demo-btn {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn.admin { background: #e11d48; color: white; }
+        .demo-btn.pro { background: #3b82f6; color: white; }
+        .demo-btn.customer { background: #10b981; color: white; }
+        .demo-btn:hover { opacity: 0.8; transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -123,14 +143,15 @@
             <p class="text-gray-500 text-sm">Sign in to your account</p>
         </div>
         
-        <!-- Admin Note -->
-        <div class="admin-note">
-            <!-- <p><strong>Admin:</strong> admin@bellabliss.com / admin123</p> -->
-            <p class="text-xs text-gray-500 mt-1">For customers & professionals: Use your registered email and password</p>
+        <!-- Demo Buttons -->
+        <div class="demo-buttons">
+            <button type="button" class="demo-btn admin" onclick="fillDemo('admin@bellabliss.com', 'admin123')">Admin</button>
+            <button type="button" class="demo-btn pro" onclick="fillDemo('pro@test.com', 'password123')">Professional</button>
+            <button type="button" class="demo-btn customer" onclick="fillDemo('customer@test.com', 'password123')">Customer</button>
         </div>
         
         <!-- Login Form -->
-        <form onsubmit="handleLogin(event)">
+        <form id="loginForm">
             <!-- Email -->
             <div class="input-group">
                 <i class="fas fa-envelope"></i>
@@ -170,15 +191,51 @@
     </div>
 
     <script>
-        function handleLogin(event) {
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        async function parseApiResponse(response) {
+            const contentType = response.headers.get('content-type') || '';
+            if (contentType.includes('application/json')) {
+                return response.json();
+            }
+
+            const text = await response.text();
+            return {
+                success: response.ok,
+                message: text || 'Unexpected server response'
+            };
+        }
+
+        // Fill demo account
+        function fillDemo(email, password) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+        }
+
+        function normalizeEmail(email) {
+            return String(email || '').trim().toLowerCase();
+        }
+        
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            
+            // Auto hide success message
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 2000);
+            }
+        }
+        
+        // Handle login
+        async function handleLogin(event) {
             event.preventDefault();
             
-            const email = document.getElementById('email').value.trim();
+            const email = normalizeEmail(document.getElementById('email').value);
             const password = document.getElementById('password').value;
-            const messageDiv = document.getElementById('message');
-            
-            // Hide previous message
-            messageDiv.style.display = 'none';
             
             // Validate
             if (!email || !password) {
@@ -186,71 +243,53 @@
                 return;
             }
             
-            // Check admin
-            if (email === 'admin@bellabliss.com' && password === 'admin123') {
-                const adminUser = {
-                    name: 'Admin User',
-                    email: email,
-                    role: 'admin'
-                };
-                
-                localStorage.setItem('token', 'admin-token-' + Date.now());
-                localStorage.setItem('user', JSON.stringify(adminUser));
-                
-                window.location.href = '../admin/dashboard.html';
-                return;
-            }
-            
-            // Check registered users
-            const users = JSON.parse(localStorage.getItem('registered_users')) || [];
-            const user = users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                // Don't store password in session
-                const sessionUser = {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    role: user.role,
-                    phone: user.phone
-                };
-                
-                localStorage.setItem('token', 'user-token-' + Date.now());
-                localStorage.setItem('user', JSON.stringify(sessionUser));
-                
-                // Show success message
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await parseApiResponse(response);
+
+                if (!response.ok || !result.success) {
+                    showMessage(result.message || 'Login failed', 'error');
+                    return;
+                }
+
+                const { token, user } = result.data;
+                localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('lastRegisteredEmail', user.email || email);
+
                 showMessage('Login successful! Redirecting...', 'success');
-                
-                // Redirect based on role
+
                 setTimeout(() => {
-                    if (user.role === 'professional') {
+                    if (user.role === 'admin') {
+                        window.location.href = '../admin/dashboard.html';
+                    } else if (user.role === 'professional') {
                         window.location.href = '../professional/dashboard.html';
                     } else {
                         window.location.href = '../../index.html';
                     }
-                }, 1500);
-            } else {
-                // Check if email exists but password is wrong
-                const emailExists = users.some(u => u.email === email);
-                
-                if (emailExists) {
-                    showMessage('Incorrect password. Please try again.', 'error');
-                } else {
-                    showMessage('Email not found. Please register first.', 'error');
-                }
+                }, 1000);
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage(error.message || 'Cannot connect to server. Please try again.', 'error');
             }
         }
         
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = 'message ' + type;
-        }
-        
-        // For demo: Show some test credentials
-        console.log('Test Accounts:');
-        console.log('Admin: admin@bellabliss.com / admin123');
-        console.log('Register new accounts to test customer/professional login');
+        document.addEventListener('DOMContentLoaded', () => {
+            const lastRegisteredEmail = localStorage.getItem('lastRegisteredEmail');
+            if (lastRegisteredEmail) {
+                document.getElementById('email').value = lastRegisteredEmail;
+            }
+        });
+
+        // Add event listener
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
     </script>
 </body>
 </html>

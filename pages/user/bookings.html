@@ -274,7 +274,7 @@
                             <a href="dashboard.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
                                 <i class="fas fa-dashboard w-6"></i> Dashboard
                             </a>
-                            <a href="orders.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                            <a href="order.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
                                 <i class="fas fa-shopping-bag w-6"></i> My Orders
                             </a>
                             <a href="bookings.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
@@ -601,6 +601,7 @@
         AOS.init();
         
         // Global variables
+        const API_BASE_URL = 'http://localhost:5000/api';
         let currentUser = null;
         let userBookings = [];
         let currentMonth = new Date().getMonth();
@@ -661,19 +662,54 @@
             document.getElementById('userInitials').textContent = initials.substring(0, 2);
         }
         
-        // Load user's bookings from localStorage
-        function loadUserBookings() {
+        // Load user's bookings from backend when possible
+        async function loadUserBookings() {
             if (!currentUser) return;
-            
-            // Get all bookings from localStorage
-            const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-            
-            // Filter bookings for current user (by email)
-            userBookings = allBookings.filter(booking => 
-                booking.userEmail === currentUser.email
-            );
-            
-            // If no bookings, create sample bookings for demo
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/bookings`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    userBookings = (result.data || []).map(booking => ({
+                        id: booking._id,
+                        bookingId: booking._id,
+                        userEmail: currentUser.email,
+                        serviceId: booking.serviceId,
+                        service: booking.service,
+                        professional: booking.professional,
+                        date: booking.date,
+                        time: booking.time,
+                        duration: booking.duration,
+                        location: booking.location,
+                        locationType: booking.locationType,
+                        price: booking.price,
+                        homeFee: booking.homeFee,
+                        total: booking.total,
+                        status: booking.status,
+                        paymentMethod: booking.paymentMethod,
+                        paymentStatus: booking.paymentStatus
+                    }));
+                } else {
+                    userBookings = [];
+                }
+            } catch (error) {
+                console.error('Failed to load bookings from backend:', error);
+            }
+
+            if (userBookings.length === 0) {
+                const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+                userBookings = allBookings.filter(booking =>
+                    booking.userEmail === currentUser.email
+                );
+            }
+
             if (userBookings.length === 0) {
                 createSampleBookings();
             } else {
@@ -1092,7 +1128,7 @@
         
         // Book again
         function bookAgain(serviceId) {
-            window.location.href = `../services/booking.html?service=${serviceId}`;
+            window.location.href = `../services/bookings.html?service=${serviceId}`;
         }
         
         // View toggles

@@ -1,0 +1,249 @@
+{
+  "users": [
+    {
+      "_id": "6212fefe06404bad81913394e41494e6",
+      "createdAt": "2026-03-30T20:07:40.887Z",
+      "updatedAt": "2026-03-30T20:07:40.887Z",
+      "name": "Admin User",
+      "email": "admin@bellabliss.com",
+      "phone": "9812345678",
+      "password": "$2a$10$3w1suIU2A4x5QMNQKNYFaOsC08qdveLkA7GU9OdRYwJIljTW28epe",
+      "role": "admin"
+    },
+    {
+      "_id": "ca8337e020d2438b8131259f3e4f8971",
+      "createdAt": "2026-03-30T20:07:40.887Z",
+      "updatedAt": "2026-03-30T20:07:40.887Z",
+      "name": "Sarah Pro",
+      "email": "pro@test.com",
+      "phone": "9812345679",
+      "password": "$2a$10$0wdj2FRMkral1ov/3EISd.Ieid2ybl/D9lMzv4kD4VnIRIivJr.Ym",
+      "role": "professional",
+      "professionalDetails": {
+        "specialization": [
+          "Makeup Artist",
+          "Bridal Makeup"
+        ],
+        "experience": 5,
+        "bio": "Professional makeup artist specializing in bridal looks."
+      }
+    },
+    {
+      "_id": "de75ca8c65f04c0dbc3f7e81bb693283",
+      "createdAt": "2026-03-30T20:07:40.887Z",
+      "updatedAt": "2026-03-30T20:07:40.887Z",
+      "name": "Bella Customer",
+      "email": "customer@test.com",
+      "phone": "9812345680",
+      "password": "$2a$10$0wdj2FRMkral1ov/3EISd.Ieid2ybl/D9lMzv4kD4VnIRIivJr.Ym",
+      "role": "customer"
+    },
+    {
+      "_id": "6329aba0816d4c8bbf394d331617d388",
+      "createdAt": "2026-03-30T20:19:34.272Z",
+      "updatedAt": "2026-03-30T20:19:34.272Z",
+      "name": "Fixed User",
+      "email": "fixed1774901974@test.com",
+      "phone": "1234567890",
+      "password": "$2a$10$4wP0OXKR7Q/fvtC9i5JVqeiJ5ZwMbY7e0SQYbClyQaOXIFCyrgIoy",
+      "role": "customer",
+      "professionalDetails": {}
+    },
+    {
+      "_id": "c571081659804254ba0383be0ddc5fc1",
+      "createdAt": "2026-03-30T20:26:08.949Z",
+      "updatedAt": "2026-03-30T20:26:08.949Z",
+      "name": "preet",
+      "email": "preet@gmail.com",
+      "phone": "9812457788",
+      "password": "$2a$10$MWUFQw2oDQHhIUBK2c6QlOQV3SNXRp9mLx.g0EC2L4kuN4aeOS7GK",
+      "role": "customer",
+      "professionalDetails": {}
+    }
+  ],
+  "products": [
+    {
+      "_id": "0296959a574a4301b3b205145b79becb",
+      "createdAt": "2026-03-30T20:07:40.685Z",
+      "updatedAt": "2026-03-30T20:07:40.685Z",
+      "name": "Matte Lipstick - Ruby Red",
+      "slug": "matte-lipstick-ruby-red",
+      "description": "Long-lasting matte lipstick in a bold ruby tone with comfortable all-day wear.",
+      "price": 29.99,
+      "image": "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=900&auto=format&fit=crop",
+      "category": "Makeup",
+      "stock": 18,
+      "rating": 4.5,
+      "reviews": 128,
+      "badge": "Bestseller",
+      "featured": true,
+      "inStock": true
+    },
+    {
+      "_id": "37487dc6f7824ea9914afb7b31505d83",
+      "createdAt": "2026-03-30T20:07:40.690Z",
+      "updatedAt": "2026-03-30T20:14:49.402Z",
+      "name": "Hydrating Face Cream",
+      "slug": "hydrating-face-cream",
+      "description": "Deep hydration for soft, glowing skin with a lightweight texture for daily use.",
+      "price": 34.99,
+      "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=900&auto=format&fit=crop",
+      "category": "Skincare",
+      "stock": 26,
+      "rating": 4.8,
+      "reviews": 89,
+      "badge": "New",
+      "featured": true,
+      "inStock": true
+    },
+    {
+      "_id": "82e74025068a4735904ae5397fb1a49d",
+      "createdAt": "2026-03-30T20:07:40.690Z",
+      "updatedAt": "2026-03-30T20:07:40.690Z",
+      "name": "Volume Mascara",
+      "slug": "volume-mascara",
+      "description": "Buildable mascara that lifts, separates, and delivers dramatic volume without clumps.",
+      "price": 24.99,
+      "image": "https://images.unsplash.com/photo-1631730359585-38a4935cbec4?w=900&auto=format&fit=crop",
+      "category": "Makeup",
+      "stock": 14,
+      "rating": 4.3,
+      "reviews": 67,
+      "badge": "Sale",
+      "featured": true,
+      "inStock": true
+    },
+    {
+      "_id": "f8b0cff5038146c39c6c972290045823",
+      "createdAt": "2026-03-30T20:07:40.690Z",
+      "updatedAt": "2026-03-30T20:07:40.690Z",
+      "name": "Eyeshadow Palette",
+      "slug": "eyeshadow-palette",
+      "description": "A richly pigmented palette featuring everyday neutrals and evening shimmer shades.",
+      "price": 49.99,
+      "image": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=900&auto=format&fit=crop",
+      "category": "Makeup",
+      "stock": 9,
+      "rating": 4.6,
+      "reviews": 234,
+      "badge": "Limited",
+      "featured": true,
+      "inStock": true
+    },
+    {
+      "_id": "964c589098104b22ad223e707afb7006",
+      "createdAt": "2026-03-30T20:07:40.690Z",
+      "updatedAt": "2026-03-30T20:07:40.690Z",
+      "name": "Shampoo & Conditioner Set",
+      "slug": "shampoo-conditioner-set",
+      "description": "A salon-inspired duo that gently cleanses and nourishes for smoother, shinier hair.",
+      "price": 39.99,
+      "image": "https://images.unsplash.com/photo-1535585209827-a15fcdbc081f?w=900&auto=format&fit=crop",
+      "category": "Haircare",
+      "stock": 20,
+      "rating": 4.4,
+      "reviews": 56,
+      "badge": "",
+      "featured": false,
+      "inStock": true
+    },
+    {
+      "_id": "1f991feb14e943a4a365fe2139113f6a",
+      "createdAt": "2026-03-30T20:07:40.690Z",
+      "updatedAt": "2026-03-30T20:07:40.690Z",
+      "name": "Perfume - Rose Garden",
+      "slug": "perfume-rose-garden",
+      "description": "A romantic floral fragrance layered with fresh rose petals and soft musk notes.",
+      "price": 89.99,
+      "image": "https://images.unsplash.com/photo-1541643600914-78b084683601?w=900&auto=format&fit=crop",
+      "category": "Fragrance",
+      "stock": 12,
+      "rating": 4.7,
+      "reviews": 45,
+      "badge": "",
+      "featured": false,
+      "inStock": true
+    },
+    {
+      "_id": "6c9232c336e74bb0a39a4240b6379320",
+      "createdAt": "2026-03-30T20:07:40.690Z",
+      "updatedAt": "2026-03-30T20:07:40.690Z",
+      "name": "Nail Polish Set",
+      "slug": "nail-polish-set",
+      "description": "A curated set of glossy and long-wear nail colors for every mood and season.",
+      "price": 19.99,
+      "image": "https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=900&auto=format&fit=crop",
+      "category": "Makeup",
+      "stock": 30,
+      "rating": 4.2,
+      "reviews": 34,
+      "badge": "",
+      "featured": false,
+      "inStock": true
+    },
+    {
+      "_id": "a2bcbd8dfabe4390a6318563fa426ee5",
+      "createdAt": "2026-03-30T20:07:40.690Z",
+      "updatedAt": "2026-03-30T20:07:40.690Z",
+      "name": "Face Serum",
+      "slug": "face-serum",
+      "description": "A brightening serum powered by skin-loving ingredients for a healthy luminous finish.",
+      "price": 44.99,
+      "image": "https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?w=900&auto=format&fit=crop",
+      "category": "Skincare",
+      "stock": 16,
+      "rating": 4.9,
+      "reviews": 78,
+      "badge": "Top Rated",
+      "featured": false,
+      "inStock": true
+    },
+    {
+      "_id": "a6c67f342e5c4949b8e966943a7d7ebd",
+      "createdAt": "2026-03-30T20:07:40.690Z",
+      "updatedAt": "2026-03-30T20:07:40.690Z",
+      "name": "Makeup Brush Set",
+      "slug": "makeup-brush-set",
+      "description": "A complete brush kit with ultra-soft bristles for blending, contouring, and precision work.",
+      "price": 59.99,
+      "image": "https://images.unsplash.com/photo-1596704017254-9b121068fb31?w=900&auto=format&fit=crop",
+      "category": "Makeup",
+      "stock": 11,
+      "rating": 4.5,
+      "reviews": 92,
+      "badge": "",
+      "featured": false,
+      "inStock": true
+    }
+  ],
+  "orders": [
+    {
+      "_id": "7ca7b89f1a0a41acbf1a41384fcc5aba",
+      "createdAt": "2026-03-30T20:16:06.496Z",
+      "updatedAt": "2026-03-30T20:16:06.496Z",
+      "user": "de75ca8c65f04c0dbc3f7e81bb693283",
+      "items": [
+        {
+          "product": "37487dc6f7824ea9914afb7b31505d83",
+          "name": "Hydrating Face Cream",
+          "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=900&auto=format&fit=crop",
+          "quantity": 1,
+          "price": 34.99
+        }
+      ],
+      "shippingAddress": {
+        "fullName": "Bella Customer",
+        "street": "streer123",
+        "city": "kathmandu",
+        "state": "78",
+        "zipCode": "12345",
+        "phone": "9812345680"
+      },
+      "totalAmount": 34.99,
+      "paymentMethod": "cod",
+      "paymentStatus": "pending",
+      "status": "pending"
+    }
+  ],
+  "bookings": []
+}

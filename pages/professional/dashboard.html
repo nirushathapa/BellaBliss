@@ -568,6 +568,7 @@
         AOS.init();
         
         // Global variables
+        const API_BASE_URL = 'http://localhost:5000/api';
         let currentProfessional = null;
         let earningsChart = null;
         let selectedAppointmentId = null;
@@ -669,14 +670,29 @@
         }
         
         // Load dashboard data
-        function loadDashboardData() {
-            // Get all bookings from localStorage
-            const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-            
-            // Filter appointments for this professional
-            const professionalAppointments = allBookings.filter(booking => 
-                booking.professional === currentProfessional.name
-            );
+        async function loadDashboardData() {
+            let professionalAppointments = [];
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/professional/bookings`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    professionalAppointments = result.data || [];
+                }
+            } catch (error) {
+                console.error('Failed to load professional bookings:', error);
+            }
+
+            if (!professionalAppointments.length) {
+                const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+                professionalAppointments = allBookings.filter(booking =>
+                    booking.professional === currentProfessional.name
+                );
+            }
             
             // Calculate stats
             const today = new Date().toISOString().split('T')[0];
@@ -901,22 +917,32 @@
             selectedAppointmentId = null;
         }
         
-        function updateAppointmentStatus() {
+        async function updateAppointmentStatus() {
             const newStatus = document.getElementById('appointmentStatus').value;
             
             if (!selectedAppointmentId) return;
-            
-            // Update in localStorage
-            const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-            const bookingIndex = allBookings.findIndex(b => b.id === selectedAppointmentId);
-            
-            if (bookingIndex !== -1) {
-                allBookings[bookingIndex].status = newStatus;
-                localStorage.setItem('bookings', JSON.stringify(allBookings));
-                
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/professional/bookings/${selectedAppointmentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'Failed to update appointment');
+                }
+
                 alert('Appointment status updated successfully!');
                 closeStatusModal();
-                loadDashboardData(); // Reload data
+                loadDashboardData();
+            } catch (error) {
+                console.error(error);
+                alert('Could not update appointment status');
             }
         }
         

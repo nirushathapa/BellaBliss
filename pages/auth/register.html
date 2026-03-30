@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Register - BellaBliss Studio</title>
     
     <!-- Tailwind CSS -->
@@ -161,7 +164,7 @@
         </div>
         
         <!-- Register Form -->
-        <form id="registerForm" onsubmit="handleRegister(event)">
+        <form id="registerForm">
             <!-- Name -->
             <div class="input-group">
                 <i class="fas fa-user"></i>
@@ -243,8 +246,27 @@
     </div>
 
     <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        async function parseApiResponse(response) {
+            const contentType = response.headers.get('content-type') || '';
+            if (contentType.includes('application/json')) {
+                return response.json();
+            }
+
+            const text = await response.text();
+            return {
+                success: response.ok,
+                message: text || 'Unexpected server response'
+            };
+        }
+
         // Initialize role
         let currentRole = 'customer';
+
+        function normalizeEmail(email) {
+            return String(email || '').trim().toLowerCase();
+        }
         
         // Check URL parameter for role
         const urlParams = new URLSearchParams(window.location.search);
@@ -259,7 +281,6 @@
         function selectRole(role) {
             currentRole = role;
             
-            // Update UI
             if (role === 'customer') {
                 document.getElementById('customerRole').classList.add('selected');
                 document.getElementById('professionalRole').classList.remove('selected');
@@ -271,17 +292,28 @@
             }
         }
         
-        function handleRegister(event) {
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            
+            // Auto hide success message
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 2000);
+            }
+        }
+        
+        async function handleRegister(event) {
             event.preventDefault();
             
-            // Get form values
             const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
+            const email = normalizeEmail(document.getElementById('email').value);
             const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const terms = document.getElementById('terms').checked;
-            const messageDiv = document.getElementById('message');
             
             // Validation
             if (!name || !email || !phone || !password || !confirmPassword) {
@@ -304,54 +336,58 @@
                 return;
             }
             
-            // Get existing users
-            let users = JSON.parse(localStorage.getItem('registered_users')) || [];
-            
-            // Check if email already exists
-            if (users.some(user => user.email === email)) {
-                showMessage('Email already registered. Please login.', 'error');
-                return;
-            }
-            
-            // Create new user
-            const newUser = {
-                id: Date.now().toString(),
-                name: name,
-                email: email,
-                phone: phone,
-                password: password, // In real app, this would be hashed
-                role: currentRole,
-                joined: new Date().toISOString()
+            const payload = {
+                name,
+                email,
+                phone,
+                password,
+                role: currentRole
             };
-            
-            // Add professional details if applicable
+
             if (currentRole === 'professional') {
-                newUser.specialization = document.getElementById('specialization').value;
-                newUser.experience = document.getElementById('experience').value;
-                newUser.bio = document.getElementById('bio').value;
+                payload.professionalDetails = {
+                    specialization: document.getElementById('specialization').value ? [document.getElementById('specialization').value] : [],
+                    experience: parseInt(document.getElementById('experience').value, 10) || 0,
+                    bio: document.getElementById('bio').value.trim()
+                };
             }
-            
-            // Save to localStorage
-            users.push(newUser);
-            localStorage.setItem('registered_users', JSON.stringify(users));
-            
-            // Show success message
-            showMessage('Registration successful! Redirecting to login...', 'success');
-            
-            // Clear form
-            document.getElementById('registerForm').reset();
-            
-            // Redirect to login after 2 seconds
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await parseApiResponse(response);
+
+                if (!response.ok || !result.success) {
+                    showMessage(result.message || 'Registration failed', 'error');
+                    return;
+                }
+
+                localStorage.setItem('token', result.data.token);
+                localStorage.setItem('user', JSON.stringify(result.data.user));
+                localStorage.setItem('lastRegisteredEmail', result.data.user.email || email);
+                showMessage('Registration successful! Your account is ready.', 'success');
+
+                setTimeout(() => {
+                    if (result.data.user.role === 'professional') {
+                        window.location.href = '../professional/dashboard.html';
+                    } else {
+                        window.location.href = '../../index.html';
+                    }
+                }, 1500);
+            } catch (error) {
+                console.error('Registration error:', error);
+                showMessage(error.message || 'Cannot connect to server. Please try again.', 'error');
+            }
         }
         
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = 'message ' + type;
-        }
+        // Add event listener
+        document.getElementById('registerForm').addEventListener('submit', handleRegister);
     </script>
 </body>
 </html>

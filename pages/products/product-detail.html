@@ -4,33 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details - BellaBliss Studio</title>
-    
-    <!-- Tailwind CSS -->
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
-        
+
         * {
             font-family: 'Poppins', sans-serif;
         }
-        
+
         h1, h2, h3, .font-playfair {
             font-family: 'Playfair Display', serif;
         }
-        
+
         .nav-link {
             position: relative;
             transition: color 0.3s ease;
         }
-        
+
         .nav-link::after {
             content: '';
             position: absolute;
@@ -41,15 +36,15 @@
             background: linear-gradient(90deg, #e11d48, #f43f5e);
             transition: width 0.3s ease;
         }
-        
+
         .nav-link:hover::after {
             width: 100%;
         }
-        
+
         .nav-link:hover {
             color: #e11d48;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, #e11d48, #f43f5e);
             color: white;
@@ -59,12 +54,7 @@
             transition: all 0.3s ease;
             display: inline-block;
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 30px -10px rgba(225, 29, 72, 0.5);
-        }
-        
+
         .btn-outline {
             border: 2px solid #e11d48;
             color: #e11d48;
@@ -74,13 +64,7 @@
             transition: all 0.3s ease;
             display: inline-block;
         }
-        
-        .btn-outline:hover {
-            background: #e11d48;
-            color: white;
-            transform: translateY(-3px);
-        }
-        
+
         .cart-badge {
             position: absolute;
             top: -8px;
@@ -95,93 +79,64 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .main-image {
             transition: transform 0.5s ease;
         }
-        
+
         .main-image:hover {
             transform: scale(1.05);
         }
-        
+
         .thumbnail {
             transition: all 0.3s ease;
             cursor: pointer;
             border: 2px solid transparent;
         }
-        
-        .thumbnail:hover {
+
+        .thumbnail:hover,
+        .thumbnail.active {
             transform: translateY(-5px);
             border-color: #e11d48;
         }
-        
-        .thumbnail.active {
-            border-color: #e11d48;
-        }
-        
-        .quantity-btn {
-            transition: all 0.3s ease;
-        }
-        
-        .quantity-btn:hover {
+
+        .quantity-btn:hover,
+        .shade-btn.selected {
             background: #e11d48;
             color: white;
-        }
-        
-        .shade-btn {
-            transition: all 0.3s ease;
-        }
-        
-        .shade-btn:hover {
-            transform: scale(1.1);
-        }
-        
-        .shade-btn.selected {
-            border-color: #e11d48;
-            transform: scale(1.1);
         }
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation with Corrected Paths -->
     <nav class="bg-white/80 backdrop-blur-md shadow-lg fixed w-full z-50">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center h-20">
-                <!-- Logo with Animation -->
                 <a href="../../index.html" class="text-3xl font-bold relative group" data-aos="fade-right">
                     <span class="text-rose-600">Bella</span><span class="text-gray-800">Bliss</span>
                     <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-rose-600 to-pink-600 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                
-                <!-- Desktop Menu -->
+
                 <div class="hidden lg:flex items-center space-x-8">
                     <a href="../../index.html" class="nav-link text-gray-700 font-medium">Home</a>
                     <a href="products.html" class="nav-link text-gray-700 font-medium">Products</a>
                     <a href="../services/services.html" class="nav-link text-gray-700 font-medium">Services</a>
                     <a href="../../about.html" class="nav-link text-gray-700 font-medium">About</a>
                     <a href="../../contact.html" class="nav-link text-gray-700 font-medium">Contact</a>
-                    
-                    <!-- Admin Link (hidden by default) -->
                     <a href="../admin/dashboard.html" id="adminLink" class="nav-link text-gray-700 font-medium hidden">Admin</a>
-                    
-                    <!-- Professional Link (hidden by default) -->
                     <a href="../professional/dashboard.html" id="professionalLink" class="nav-link text-gray-700 font-medium hidden">Dashboard</a>
-                    
-                    <!-- Cart Icon with Animation -->
+
                     <div class="relative group">
                         <a href="cart.html" class="text-gray-700 hover:text-rose-600 transition relative">
                             <i class="fas fa-shopping-cart text-2xl group-hover:scale-110 transition"></i>
                             <span class="cart-count cart-badge">0</span>
                         </a>
                     </div>
-                    
-                    <!-- Auth Buttons -->
+
                     <div id="authButtons" class="flex items-center space-x-3">
                         <a href="../auth/login.html" class="btn-primary !py-2 !px-6 text-sm">Login</a>
                         <a href="../auth/register.html" class="btn-outline !py-2 !px-6 text-sm">Register</a>
                     </div>
-                    
-                    <!-- User Menu -->
+
                     <div id="userMenu" class="relative hidden">
                         <button onclick="toggleUserMenu()" class="flex items-center space-x-2 group">
                             <div class="w-10 h-10 bg-gradient-to-r from-rose-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold group-hover:scale-110 transition">
@@ -190,19 +145,10 @@
                             <span id="userName" class="font-medium"></span>
                             <i class="fas fa-chevron-down text-sm transition group-hover:rotate-180"></i>
                         </button>
-                        
+
                         <div id="userDropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl py-2 hidden">
                             <a href="../user/dashboard.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
                                 <i class="fas fa-dashboard w-6"></i> Dashboard
-                            </a>
-                            <a href="../user/orders.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
-                                <i class="fas fa-shopping-bag w-6"></i> My Orders
-                            </a>
-                            <a href="../user/bookings.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
-                                <i class="fas fa-calendar w-6"></i> My Bookings
-                            </a>
-                            <a href="../user/profile.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
-                                <i class="fas fa-user w-6"></i> Profile
                             </a>
                             <hr class="my-2">
                             <button onclick="logout()" class="block w-full text-left px-4 py-3 hover:bg-red-50 text-red-600 transition">
@@ -211,29 +157,14 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Mobile Menu Button -->
+
                 <button class="lg:hidden text-gray-700" onclick="toggleMobileMenu()">
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
         </div>
-        
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden lg:hidden bg-white border-t px-4 py-4">
-            <a href="../../index.html" class="block py-3 hover:text-rose-600">Home</a>
-            <a href="products.html" class="block py-3 hover:text-rose-600">Products</a>
-            <a href="../services/services.html" class="block py-3 hover:text-rose-600">Services</a>
-            <a href="../../about.html" class="block py-3 hover:text-rose-600">About</a>
-            <a href="../../contact.html" class="block py-3 hover:text-rose-600">Contact</a>
-            <div class="flex space-x-3 py-3">
-                <a href="../auth/login.html" class="flex-1 btn-primary !py-2 text-center">Login</a>
-                <a href="../auth/register.html" class="flex-1 btn-outline !py-2 text-center">Register</a>
-            </div>
-        </div>
     </nav>
 
-    <!-- Breadcrumb -->
     <div class="pt-24 bg-white border-b">
         <div class="container mx-auto px-4 py-4">
             <div class="flex items-center text-sm">
@@ -241,70 +172,54 @@
                 <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
                 <a href="products.html" class="text-gray-500 hover:text-rose-600">Products</a>
                 <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
-                <span class="text-rose-600" id="productName">Matte Lipstick - Ruby Red</span>
+                <span class="text-rose-600" id="productName">Product</span>
             </div>
         </div>
     </div>
 
-    <!-- Product Details -->
     <section class="py-12">
         <div class="container mx-auto px-4">
             <div class="grid lg:grid-cols-2 gap-12">
-                <!-- Product Images -->
                 <div>
                     <div class="mb-4 rounded-2xl overflow-hidden shadow-lg">
-                        <img id="mainImage" src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800" alt="Product" class="main-image w-full">
+                        <img id="mainImage" src="https://via.placeholder.com/800x800?text=Product" alt="Product" class="main-image w-full">
                     </div>
-                    <div class="grid grid-cols-4 gap-4">
-                        <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=200" alt="Thumb 1" class="thumbnail border-2 rounded-lg" onclick="changeImage(this.src)">
-                        <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=200" alt="Thumb 2" class="thumbnail border-2 rounded-lg" onclick="changeImage(this.src)">
-                        <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=200" alt="Thumb 3" class="thumbnail border-2 rounded-lg" onclick="changeImage(this.src)">
-                        <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=200" alt="Thumb 4" class="thumbnail border-2 rounded-lg" onclick="changeImage(this.src)">
-                    </div>
+                    <div class="grid grid-cols-4 gap-4" id="productThumbnails"></div>
                 </div>
-                
-                <!-- Product Info -->
+
                 <div>
-                    <h1 class="text-3xl font-bold mb-2" id="productNameTitle">Matte Lipstick - Ruby Red</h1>
-                    
+                    <h1 class="text-3xl font-bold mb-2" id="productNameTitle">Product</h1>
+
                     <div class="flex items-center mb-4">
-                        <div class="flex text-yellow-400">
-                            ★★★★★
-                        </div>
-                        <span class="text-gray-500 ml-2">(128 reviews)</span>
+                        <div class="flex text-yellow-400" id="productRating"></div>
+                        <span class="text-gray-500 ml-2" id="productReviews">(0 reviews)</span>
                     </div>
-                    
-                    <p class="text-3xl font-bold text-rose-600 mb-6" id="productPrice">$29.99</p>
-                    
-                    <p class="text-gray-600 mb-6" id="productDescription">
-                        Long-lasting matte lipstick in rich ruby red. Provides intense color payoff and stays put for up to 8 hours. Enriched with vitamin E for comfortable wear.
-                    </p>
-                    
-                    <!-- Variants -->
+
+                    <p class="text-3xl font-bold text-rose-600 mb-6" id="productPrice">$0.00</p>
+                    <p class="text-gray-600 mb-6" id="productDescription">Loading product details...</p>
+
                     <div class="mb-6">
                         <h3 class="font-semibold mb-3">Shade:</h3>
                         <div class="flex space-x-3">
-                            <button class="shade-btn w-10 h-10 bg-red-600 rounded-full border-2 border-transparent hover:border-gray-400" onclick="selectShade(this, 'Ruby Red')"></button>
-                            <button class="shade-btn w-10 h-10 bg-pink-600 rounded-full border-2 border-transparent hover:border-gray-400" onclick="selectShade(this, 'Pink Blossom')"></button>
-                            <button class="shade-btn w-10 h-10 bg-purple-600 rounded-full border-2 border-transparent hover:border-gray-400" onclick="selectShade(this, 'Purple Passion')"></button>
-                            <button class="shade-btn w-10 h-10 bg-orange-600 rounded-full border-2 border-transparent hover:border-gray-400" onclick="selectShade(this, 'Coral Dream')"></button>
+                            <button class="shade-btn w-10 h-10 bg-red-600 rounded-full border-2 border-transparent" onclick="selectShade(this)"></button>
+                            <button class="shade-btn w-10 h-10 bg-pink-600 rounded-full border-2 border-transparent" onclick="selectShade(this)"></button>
+                            <button class="shade-btn w-10 h-10 bg-purple-600 rounded-full border-2 border-transparent" onclick="selectShade(this)"></button>
+                            <button class="shade-btn w-10 h-10 bg-orange-500 rounded-full border-2 border-transparent" onclick="selectShade(this)"></button>
                         </div>
                     </div>
-                    
-                    <!-- Quantity -->
+
                     <div class="mb-6">
                         <h3 class="font-semibold mb-3">Quantity:</h3>
                         <div class="flex items-center space-x-3">
                             <button class="quantity-btn w-10 h-10 border rounded-lg" onclick="updateQuantity(-1)">-</button>
                             <input type="number" id="quantity" value="1" min="1" max="10" class="w-16 text-center border rounded-lg py-2">
                             <button class="quantity-btn w-10 h-10 border rounded-lg" onclick="updateQuantity(1)">+</button>
-                            <span class="text-green-600 ml-3">In Stock</span>
+                            <span class="text-green-600 ml-3" id="stockStatus">In Stock</span>
                         </div>
                     </div>
-                    
-                    <!-- Actions -->
+
                     <div class="flex space-x-4 mb-8">
-                        <button onclick="addToCart()" class="flex-1 bg-rose-600 text-white py-3 rounded-lg hover:bg-rose-700 transition font-semibold">
+                        <button onclick="addCurrentProductToCart()" class="flex-1 bg-rose-600 text-white py-3 rounded-lg hover:bg-rose-700 transition font-semibold">
                             <i class="fas fa-shopping-cart mr-2"></i>
                             Add to Cart
                         </button>
@@ -312,297 +227,33 @@
                             <i class="far fa-heart text-xl"></i>
                         </button>
                     </div>
-                    
-                    <!-- Additional Info -->
-                    <div class="border-t pt-6">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="flex items-center text-gray-600">
-                                <i class="fas fa-truck text-rose-600 mr-2"></i>
-                                Free shipping over $50
-                            </div>
-                            <div class="flex items-center text-gray-600">
-                                <i class="fas fa-undo text-rose-600 mr-2"></i>
-                                30-day returns
-                            </div>
-                            <div class="flex items-center text-gray-600">
-                                <i class="fas fa-shield-alt text-rose-600 mr-2"></i>
-                                Secure payment
-                            </div>
-                            <div class="flex items-center text-gray-600">
-                                <i class="fas fa-leaf text-rose-600 mr-2"></i>
-                                Cruelty free
-                            </div>
-                        </div>
+
+                    <div class="border-t pt-6 grid grid-cols-2 gap-4">
+                        <div class="flex items-center text-gray-600"><i class="fas fa-truck text-rose-600 mr-2"></i> Free shipping over $50</div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-undo text-rose-600 mr-2"></i> 30-day returns</div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-shield-alt text-rose-600 mr-2"></i> Secure payment</div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-leaf text-rose-600 mr-2"></i> Cruelty free</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Related Products -->
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center mb-12">You May Also Like</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6" id="relatedProducts">
-                <!-- Related products will be loaded via JS -->
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6" id="relatedProducts"></div>
         </div>
     </section>
 
-    <!-- Footer with Corrected Paths -->
     <footer class="bg-gray-900 text-white py-16">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-2xl font-bold mb-4">Bella<span class="text-rose-600">Bliss</span></h3>
-                    <p class="text-gray-400 mb-4">Your one-stop destination for premium beauty products and professional services.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-rose-600 transition">
-                            <i class="fab fa-pinterest"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="../../about.html" class="text-gray-400 hover:text-rose-400">About Us</a></li>
-                        <li><a href="../../contact.html" class="text-gray-400 hover:text-rose-400">Contact</a></li>
-                        <li><a href="products.html" class="text-gray-400 hover:text-rose-400">Products</a></li>
-                        <li><a href="../services/services.html" class="text-gray-400 hover:text-rose-400">Services</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-rose-400">FAQs</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Customer Service</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Return Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-rose-400">Terms of Service</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Contact Info</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li class="flex items-start gap-3">
-                            <i class="fas fa-map-marker-alt mt-1"></i>
-                            <span>123 Beauty Lane, Kathmandu</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="fas fa-phone"></i>
-                            <span>+977 9812345678</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="fas fa-envelope"></i>
-                            <span>info@bellabliss.com</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <hr class="border-gray-800 my-8">
-            
-            <div class="text-center text-gray-400">
-                <p>&copy; 2024 BellaBliss Studio. All rights reserved. Made with <i class="fas fa-heart text-rose-600"></i> for beauty lovers</p>
-            </div>
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p>&copy; 2024 BellaBliss Studio. All rights reserved.</p>
         </div>
     </footer>
 
+    <script src="../../js/api.js"></script>
     <script src="../../js/main.js"></script>
-    <script>
-        AOS.init();
-        
-        // Sample products data
-        const products = [
-            { id: 1, name: 'Matte Lipstick - Ruby Red', price: 29.99, category: 'Makeup', image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=600', rating: 4.5, reviews: 128 },
-            { id: 2, name: 'Hydrating Face Cream', price: 34.99, category: 'Skincare', image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600', rating: 4.8, reviews: 89 },
-            { id: 3, name: 'Volume Mascara', price: 24.99, category: 'Makeup', image: 'https://images.unsplash.com/photo-1631730359585-38a4935cbec4?w=600', rating: 4.3, reviews: 67 },
-            { id: 4, name: 'Eyeshadow Palette', price: 49.99, category: 'Makeup', image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=600', rating: 4.6, reviews: 234 }
-        ];
-
-        // Get product ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const productId = parseInt(urlParams.get('id')) || 1;
-        
-        // Load product details
-        function loadProductDetails() {
-            const product = products.find(p => p.id === productId) || products[0];
-            
-            document.getElementById('productName').textContent = product.name;
-            document.getElementById('productNameTitle').textContent = product.name;
-            document.getElementById('productPrice').textContent = '$' + product.price;
-            document.getElementById('mainImage').src = product.image;
-            
-            // Load related products
-            loadRelatedProducts(product.category);
-        }
-        
-        // Load related products
-        function loadRelatedProducts(category) {
-            const related = products.filter(p => p.category === category && p.id !== productId).slice(0, 4);
-            const container = document.getElementById('relatedProducts');
-            
-            if (related.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center col-span-4">No related products found</p>';
-                return;
-            }
-            
-            container.innerHTML = related.map(product => `
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                    <a href="product-detail.html?id=${product.id}">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
-                    </a>
-                    <div class="p-4">
-                        <a href="product-detail.html?id=${product.id}">
-                            <h3 class="font-semibold hover:text-rose-600">${product.name}</h3>
-                        </a>
-                        <p class="text-rose-600 font-bold mt-2">$${product.price}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        // Change main image
-        function changeImage(src) {
-            document.getElementById('mainImage').src = src;
-        }
-        
-        // Update quantity
-        function updateQuantity(change) {
-            const input = document.getElementById('quantity');
-            let value = parseInt(input.value) + change;
-            if (value < 1) value = 1;
-            if (value > 10) value = 10;
-            input.value = value;
-        }
-        
-        // Select shade
-        function selectShade(button, shadeName) {
-            document.querySelectorAll('.shade-btn').forEach(btn => {
-                btn.classList.remove('selected', 'border-gray-400');
-            });
-            button.classList.add('selected');
-        }
-        
-        // Add to cart
-        function addToCart() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                if (confirm('Please login to add items to cart')) {
-                    window.location.href = '../auth/login.html';
-                }
-                return;
-            }
-            
-            const quantity = parseInt(document.getElementById('quantity').value);
-            const product = products.find(p => p.id === productId) || products[0];
-            
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            
-            const existingItem = cart.find(item => item.id === productId);
-            
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                cart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image,
-                    quantity: quantity
-                });
-            }
-            
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            alert('Product added to cart!');
-        }
-        
-        // Add to wishlist
-        function addToWishlist() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                if (confirm('Please login to add items to wishlist')) {
-                    window.location.href = '../auth/login.html';
-                }
-                return;
-            }
-            
-            alert('Added to wishlist!');
-        }
-        
-        // Check login status
-        function checkLoginStatus() {
-            const token = localStorage.getItem('token');
-            const userStr = localStorage.getItem('user');
-            
-            if (token && userStr) {
-                const user = JSON.parse(userStr);
-                document.getElementById('authButtons').classList.add('hidden');
-                document.getElementById('userMenu').classList.remove('hidden');
-                document.getElementById('userName').textContent = user.name.split(' ')[0];
-                
-                const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
-                document.getElementById('userInitials').textContent = initials.substring(0, 2);
-                
-                if (user.role === 'admin') {
-                    document.getElementById('adminLink').classList.remove('hidden');
-                }
-                if (user.role === 'professional') {
-                    document.getElementById('professionalLink').classList.remove('hidden');
-                }
-            }
-        }
-        
-        function updateCartCount() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.querySelectorAll('.cart-count').forEach(el => {
-                el.textContent = count;
-            });
-        }
-        
-        function toggleUserMenu() {
-            document.getElementById('userDropdown').classList.toggle('hidden');
-        }
-        
-        function toggleMobileMenu() {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
-        }
-        
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '../../index.html';
-        }
-        
-        // Initialize
-        loadProductDetails();
-        checkLoginStatus();
-        updateCartCount();
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('userDropdown');
-            const userMenu = document.getElementById('userMenu');
-            
-            if (dropdown && userMenu && !userMenu.contains(event.target)) {
-                dropdown.classList.add('hidden');
-            }
-        });
-    </script>
+    <script src="../../js/product-detail.js"></script>
 </body>
 </html>

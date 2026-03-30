@@ -169,7 +169,7 @@
                             <a href="../user/dashboard.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
                                 <i class="fas fa-dashboard w-6"></i> Dashboard
                             </a>
-                            <a href="../user/orders.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
+                            <a href="../user/order.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
                                 <i class="fas fa-shopping-bag w-6"></i> My Orders
                             </a>
                             <a href="../user/bookings.html" class="block px-4 py-3 hover:bg-rose-50 hover:text-rose-600 transition">
@@ -235,11 +235,11 @@
                         </div>
                         <div>
                             <p class="text-gray-600">Payment</p>
-                            <p class="font-semibold" id="orderPayment">Khalti</p>
+                            <p class="font-semibold" id="orderPayment">cash</p>
                         </div>
                         <div>
                             <p class="text-gray-600">Status</p>
-                            <p class="text-green-600 font-semibold">Paid</p>
+                            <p class="text-green-600 font-semibold">Pending</p>
                         </div>
                     </div>
                     
@@ -332,24 +332,45 @@
     <script>
         AOS.init();
         
-        // Load order details from localStorage or URL
-        function loadOrderDetails() {
-            const user = JSON.parse(localStorage.getItem('user'));
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        // Load order details from backend when possible
+        async function loadOrderDetails() {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const token = localStorage.getItem('token');
             const urlParams = new URLSearchParams(window.location.search);
             const orderId = urlParams.get('id');
-            
-            // In a real app, you'd fetch order details from backend
-            // For demo, we'll use static data with user email
-            
+
             if (user) {
                 document.getElementById('userEmail').textContent = user.email;
             }
-            
-            if (orderId) {
+
+            if (orderId && token) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        const order = result.data;
+                        document.getElementById('orderNumber').textContent = '#' + order._id;
+                        document.getElementById('orderDate').textContent = new Date(order.createdAt).toLocaleDateString();
+                        document.getElementById('orderTotal').textContent = `$${Number(order.totalAmount).toFixed(2)}`;
+                        document.getElementById('orderPayment').textContent = order.paymentMethod;
+                    } else {
+                        document.getElementById('orderNumber').textContent = '#' + orderId;
+                    }
+                } catch (error) {
+                    console.error('Failed to load order details:', error);
+                    document.getElementById('orderNumber').textContent = '#' + orderId;
+                }
+            } else if (orderId) {
                 document.getElementById('orderNumber').textContent = '#' + orderId;
             }
-            
-            // Clear cart after successful order
+
             localStorage.removeItem('cart');
             updateCartCount();
         }
