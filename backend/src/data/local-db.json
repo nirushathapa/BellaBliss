@@ -59,6 +59,146 @@
       "password": "$2a$10$MWUFQw2oDQHhIUBK2c6QlOQV3SNXRp9mLx.g0EC2L4kuN4aeOS7GK",
       "role": "customer",
       "professionalDetails": {}
+    },
+    {
+      "_id": "694b3d4018c349869135c8efd5ff4ee0",
+      "createdAt": "2026-03-31T01:13:03.875Z",
+      "updatedAt": "2026-03-31T01:13:03.875Z",
+      "name": "Playwright Customer",
+      "email": "customer.1774919582679@example.com",
+      "phone": "9812345600",
+      "password": "$2a$10$u05q5qx0169eB.SQrOpvsOLAiZ/OexHnAGhQBS7h.smkNvxhGvCpG",
+      "role": "customer",
+      "professionalDetails": {}
+    },
+    {
+      "_id": "132372a31c0440938b0dbb202ee3f9d6",
+      "createdAt": "2026-03-31T01:13:05.030Z",
+      "updatedAt": "2026-03-31T01:13:05.030Z",
+      "name": "Playwright Professional",
+      "email": "pro.1774919583574@example.com",
+      "phone": "9812345601",
+      "password": "$2a$10$6fuIEdhNgkhE5ZMeRmHMdeEObkMAYaMBK3ajhauI.zMutO0qBQKXi",
+      "role": "professional",
+      "professionalDetails": {
+        "specialization": [
+          "Hair Stylist"
+        ],
+        "experience": 5,
+        "bio": "Experienced stylist created during automated testing."
+      }
+    },
+    {
+      "_id": "1385cc6735a7476f9042626573e9e78b",
+      "createdAt": "2026-03-31T01:15:52.246Z",
+      "updatedAt": "2026-03-31T01:15:52.246Z",
+      "name": "Playwright Professional",
+      "email": "pro.1774919751352@example.com",
+      "phone": "9812345601",
+      "password": "$2a$10$zgO7e1bzdnRXE.vfv1dMAeU0Q3LmHG4JfqL84IQDjqXNsrz6.0vEy",
+      "role": "professional",
+      "professionalDetails": {
+        "specialization": [
+          "Hair Stylist"
+        ],
+        "experience": 5,
+        "bio": "Experienced stylist created during automated testing."
+      }
+    },
+    {
+      "_id": "0f97699c018f48339ed8dd3612d7d2e2",
+      "createdAt": "2026-03-31T01:15:53.547Z",
+      "updatedAt": "2026-03-31T01:15:53.547Z",
+      "name": "Playwright Customer",
+      "email": "customer.1774919752609@example.com",
+      "phone": "9812345600",
+      "password": "$2a$10$DyIBM1iFBpQ/RkVZlTcORu3jMoQ0CNi3L6SrFj.rbN/ODMWTVN2jC",
+      "role": "customer",
+      "professionalDetails": {}
+    },
+    {
+      "_id": "bc0f32b831154c7597cac481b44ebeab",
+      "createdAt": "2026-03-31T01:16:45.331Z",
+      "updatedAt": "2026-03-31T01:16:45.331Z",
+      "name": "Playwright Customer",
+      "email": "customer.1774919804708@example.com",
+      "phone": "9812345600",
+      "password": "$2a$10$uyL9m1VO1IEB3eI2XmKZCOkJaYrHPSqTxH6k8FDYFqP.pwYRk2LJ2",
+      "role": "customer",
+      "professionalDetails": {}
+    },
+    {
+      "_id": "10f0537884594bae898073951121eb1f",
+      "createdAt": "2026-03-31T01:16:48.061Z",
+      "updatedAt": "2026-03-31T01:16:48.061Z",
+      "name": "Playwright Professional",
+      "email": "pro.1774919806710@example.com",
+      "phone": "9812345601",
+      "password": "$2a$10$gbw8ZV0rrxX4ckEoOfX52ebjmuxas.kUDWXr2Mdq812iOPXEzuu5i",
+      "role": "professional",
+      "professionalDetails": {
+        "specialization": [
+          "Hair Stylist"
+        ],
+        "experience": 5,
+        "bio": "Experienced stylist created during automated testing."
+      }
+    },
+    {
+      "_id": "2a90b058b7f2464a81313623b8202e4b",
+      "createdAt": "2026-03-31T01:21:08.708Z",
+      "updatedAt": "2026-03-31T01:21:08.708Z",
+      "name": "Playwright Customer",
+      "email": "customer.1774920067881@example.com",
+      "phone": "9812345600",
+      "password": "$2a$10$UGO9nlTFb9EFWuVBEpkuTO4IGZw6qvm.hA9z.KYw3D.H1baLZwKbS",
+      "role": "customer",
+      "professionalDetails": {}
+    },
+    {
+      "_id": "278b09101f444996ae2813114e3fb63d",
+      "createdAt": "2026-03-31T01:21:09.645Z",
+      "updatedAt": "2026-03-31T01:21:09.645Z",
+      "name": "Playwright Professional",
+      "email": "pro.1774920068712@example.com",
+      "phone": "9812345601",
+      "password": "$2a$10$2w5THWowizsgiPUMwVlhvOqYBRajjSGMUzOl3XVcH0Cx.mTwwno7C",
+      "role": "professional",
+      "professionalDetails": {
+        "specialization": [
+          "Hair Stylist"
+        ],
+        "experience": 5,
+        "bio": "Experienced stylist created during automated testing."
+      }
+    },
+    {
+      "_id": "d12ad13ea81a4a2d89fc6cec1a67a6f6",
+      "createdAt": "2026-03-31T01:42:10.907Z",
+      "updatedAt": "2026-03-31T01:42:10.907Z",
+      "name": "Playwright Customer",
+      "email": "customer.1774921330342@example.com",
+      "phone": "9812345600",
+      "password": "$2a$10$Pll1fi2ASgl4Fub8vCpp/.EWt90weQ0gmNVmI8is4OkYGCeDiEIBW",
+      "role": "customer",
+      "professionalDetails": {}
+    },
+    {
+      "_id": "4452141cfb9e47538d132c03aa0b6094",
+      "createdAt": "2026-03-31T01:42:13.877Z",
+      "updatedAt": "2026-03-31T01:42:13.877Z",
+      "name": "Playwright Professional",
+      "email": "pro.1774921331270@example.com",
+      "phone": "9812345601",
+      "password": "$2a$10$8cerEaBfDO9ybhmO2nwk3.GmRXdjHeRUhnHKwQQ/R7Vr6qAdXttLO",
+      "role": "professional",
+      "professionalDetails": {
+        "specialization": [
+          "Hair Stylist"
+        ],
+        "experience": 5,
+        "bio": "Experienced stylist created during automated testing."
+      }
     }
   ],
   "products": [

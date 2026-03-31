@@ -1,36 +1,31 @@
 const fs = require("fs");
 const path = require("path");
 const { randomUUID } = require("crypto");
+const { DatabaseSync } = require("node:sqlite");
 const seedProducts = require("../data/seedProducts");
 const createSeedUsers = require("../data/seedUsers");
 
-const DB_FILE = path.join(__dirname, "..", "data", "local-db.json");
+const DEFAULT_DB_FILE = path.join(__dirname, "..", "data", "blisss.sqlite");
+const DEFAULT_LEGACY_JSON_FILE = path.join(__dirname, "..", "data", "local-db.json");
 
 let fileStoreEnabled = false;
+let db;
 
-const ensureDbFile = () => {
-  const dir = path.dirname(DB_FILE);
+const getDbFile = () =>
+  process.env.DATA_FILE
+    ? path.resolve(process.cwd(), process.env.DATA_FILE)
+    : DEFAULT_DB_FILE;
+
+const getLegacyJsonFile = () =>
+  process.env.LEGACY_DATA_FILE
+    ? path.resolve(process.cwd(), process.env.LEGACY_DATA_FILE)
+    : DEFAULT_LEGACY_JSON_FILE;
+
+const ensureParentDir = (filename) => {
+  const dir = path.dirname(filename);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
-
-  if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(
-      DB_FILE,
-      JSON.stringify({ users: [], products: [], orders: [], bookings: [] }, null, 2),
-      "utf8"
-    );
-  }
-};
-
-const readDb = () => {
-  ensureDbFile();
-  return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
-};
-
-const writeDb = (db) => {
-  ensureDbFile();
-  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), "utf8");
 };
 
 const clone = (value) => {
@@ -43,13 +38,140 @@ const clone = (value) => {
 
 const createId = () => randomUUID().replace(/-/g, "");
 
+const timestamp = () => new Date().toISOString();
+
 const withMeta = (item) => {
-  const timestamp = new Date().toISOString();
+  const now = timestamp();
   return {
     _id: item._id || createId(),
-    createdAt: item.createdAt || timestamp,
-    updatedAt: timestamp,
+    createdAt: item.createdAt || now,
+    updatedAt: item.updatedAt || now,
     ...item,
+  };
+};
+
+const parseJson = (value, fallback) => {
+  if (!value) {
+    return clone(fallback);
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return clone(fallback);
+  }
+};
+
+const boolToInt = (value) => (value ? 1 : 0);
+const intToBool = (value) => Boolean(value);
+
+const getDb = () => {
+  if (db) {
+    return db;
+  }
+
+  const dbFile = getDbFile();
+  ensureParentDir(dbFile);
+  db = new DatabaseSync(dbFile);
+  db.exec(`
+    PRAGMA journal_mode = WAL;
+    CREATE TABLE IF NOT EXISTS users (
+      _id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      phone TEXT,
+      password TEXT NOT NULL,
+      role TEXT NOT NULL,
+      professionalDetails TEXT,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS products (
+      _id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      slug TEXT NOT NULL UNIQUE,
+      description TEXT,
+      price REAL NOT NULL,
+      image TEXT,
+      category TEXT,
+      stock INTEGER DEFAULT 0,
+      rating REAL DEFAULT 0,
+      reviews INTEGER DEFAULT 0,
+      badge TEXT,
+      featured INTEGER DEFAULT 0,
+      inStock INTEGER DEFAULT 1,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS orders (
+      _id TEXT PRIMARY KEY,
+      user TEXT NOT NULL,
+      items TEXT NOT NULL,
+      shippingAddress TEXT,
+      totalAmount REAL NOT NULL,
+      paymentMethod TEXT,
+      paymentStatus TEXT,
+      status TEXT,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS bookings (
+      _id TEXT PRIMARY KEY,
+      user TEXT NOT NULL,
+      service TEXT,
+      professional TEXT,
+      date TEXT,
+      time TEXT,
+      price REAL DEFAULT 0,
+      paymentStatus TEXT,
+      status TEXT,
+      notes TEXT,
+      customerName TEXT,
+      userEmail TEXT,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    );
+  `);
+
+  return db;
+};
+
+const mapUserRow = (row) => {
+  if (!row) return null;
+  return {
+    ...row,
+    professionalDetails: parseJson(row.professionalDetails, {}),
+  };
+};
+
+const mapProductRow = (row) => {
+  if (!row) return null;
+  return {
+    ...row,
+    price: Number(row.price),
+    stock: Number(row.stock || 0),
+    rating: Number(row.rating || 0),
+    reviews: Number(row.reviews || 0),
+    featured: intToBool(row.featured),
+    inStock: intToBool(row.inStock),
+  };
+};
+
+const mapOrderRow = (row) => {
+  if (!row) return null;
+  return {
+    ...row,
+    totalAmount: Number(row.totalAmount || 0),
+    items: parseJson(row.items, []),
+    shippingAddress: parseJson(row.shippingAddress, {}),
+  };
+};
+
+const mapBookingRow = (row) => {
+  if (!row) return null;
+  return {
+    ...row,
+    price: Number(row.price || 0),
   };
 };
 
@@ -101,6 +223,87 @@ const filterProducts = (products, query = {}) => {
   return sortItems(filtered, query.sort);
 };
 
+const countRows = (table) => {
+  const row = getDb().prepare(`SELECT COUNT(*) AS count FROM ${table}`).get();
+  return Number(row.count || 0);
+};
+
+const readLegacyDb = () => {
+  const legacyFile = getLegacyJsonFile();
+  if (!fs.existsSync(legacyFile)) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(fs.readFileSync(legacyFile, "utf8"));
+  } catch {
+    return null;
+  }
+};
+
+const insertUser = getDb().prepare(`
+  INSERT OR REPLACE INTO users
+  (_id, name, email, phone, password, role, professionalDetails, createdAt, updatedAt)
+  VALUES (@_id, @name, @email, @phone, @password, @role, @professionalDetails, @createdAt, @updatedAt)
+`);
+
+const insertProduct = getDb().prepare(`
+  INSERT OR REPLACE INTO products
+  (_id, name, slug, description, price, image, category, stock, rating, reviews, badge, featured, inStock, createdAt, updatedAt)
+  VALUES (@_id, @name, @slug, @description, @price, @image, @category, @stock, @rating, @reviews, @badge, @featured, @inStock, @createdAt, @updatedAt)
+`);
+
+const insertOrder = getDb().prepare(`
+  INSERT OR REPLACE INTO orders
+  (_id, user, items, shippingAddress, totalAmount, paymentMethod, paymentStatus, status, createdAt, updatedAt)
+  VALUES (@_id, @user, @items, @shippingAddress, @totalAmount, @paymentMethod, @paymentStatus, @status, @createdAt, @updatedAt)
+`);
+
+const insertBooking = getDb().prepare(`
+  INSERT OR REPLACE INTO bookings
+  (_id, user, service, professional, date, time, price, paymentStatus, status, notes, customerName, userEmail, createdAt, updatedAt)
+  VALUES (@_id, @user, @service, @professional, @date, @time, @price, @paymentStatus, @status, @notes, @customerName, @userEmail, @createdAt, @updatedAt)
+`);
+
+const persistUser = (user) => {
+  insertUser.run({
+    ...withMeta(user),
+    email: String(user.email).toLowerCase(),
+    professionalDetails: JSON.stringify(user.professionalDetails || {}),
+  });
+};
+
+const persistProduct = (product) => {
+  insertProduct.run({
+    ...withMeta(product),
+    price: Number(product.price || 0),
+    stock: Number(product.stock || 0),
+    rating: Number(product.rating || 0),
+    reviews: Number(product.reviews || 0),
+    featured: boolToInt(product.featured),
+    inStock: boolToInt(product.inStock !== false),
+  });
+};
+
+const persistOrder = (order) => {
+  insertOrder.run({
+    ...withMeta(order),
+    items: JSON.stringify(order.items || []),
+    shippingAddress: JSON.stringify(order.shippingAddress || {}),
+    totalAmount: Number(order.totalAmount || 0),
+  });
+};
+
+const persistBooking = (booking) => {
+  insertBooking.run({
+    ...withMeta(booking),
+    price: Number(booking.price || 0),
+    notes: booking.notes || "",
+    customerName: booking.customerName || booking.name || "",
+    userEmail: booking.userEmail || booking.email || "",
+  });
+};
+
 const setFileStoreEnabled = (enabled) => {
   fileStoreEnabled = enabled;
 };
@@ -108,29 +311,37 @@ const setFileStoreEnabled = (enabled) => {
 const isFileStoreEnabled = () => fileStoreEnabled;
 
 const seedFileStore = async () => {
-  const db = readDb();
+  getDb();
 
-  if (!db.products.length) {
-    db.products = seedProducts.map((product) =>
-      withMeta({
-        ...product,
-      })
-    );
+  const hasExistingData =
+    countRows("users") > 0 ||
+    countRows("products") > 0 ||
+    countRows("orders") > 0 ||
+    countRows("bookings") > 0;
+
+  if (hasExistingData) {
+    return;
   }
 
-  if (!db.users.length) {
-    const users = await createSeedUsers();
-    db.users = users.map((user) => withMeta(user));
+  const legacyDb = readLegacyDb();
+  if (legacyDb) {
+    (legacyDb.users || []).forEach((user) => persistUser(user));
+    (legacyDb.products || []).forEach((product) => persistProduct(product));
+    (legacyDb.orders || []).forEach((order) => persistOrder(order));
+    (legacyDb.bookings || []).forEach((booking) => persistBooking(booking));
+    return;
   }
 
-  writeDb(db);
+  seedProducts.forEach((product) => persistProduct(product));
+  const users = await createSeedUsers();
+  users.forEach((user) => persistUser(user));
 };
 
 const getProducts = (query = {}) => {
-  const db = readDb();
+  const rows = getDb().prepare("SELECT * FROM products").all().map(mapProductRow);
   const currentPage = Number(query.page) || 1;
   const pageSize = Number(query.limit) || 12;
-  const filtered = filterProducts(db.products, query);
+  const filtered = filterProducts(rows, query);
   const start = (currentPage - 1) * pageSize;
   const data = filtered.slice(start, start + pageSize);
 
@@ -144,135 +355,147 @@ const getProducts = (query = {}) => {
   };
 };
 
-const getAllProducts = () => clone(readDb().products);
+const getAllProducts = () =>
+  clone(getDb().prepare("SELECT * FROM products").all().map(mapProductRow));
+
 const getProductBySlug = (slug) =>
-  clone(readDb().products.find((product) => product.slug === slug));
+  clone(mapProductRow(getDb().prepare("SELECT * FROM products WHERE slug = ?").get(slug)));
+
 const getProductById = (id) =>
-  clone(readDb().products.find((product) => String(product._id) === String(id)));
+  clone(mapProductRow(getDb().prepare("SELECT * FROM products WHERE _id = ?").get(String(id))));
 
 const createProduct = (product) => {
-  const db = readDb();
   const record = withMeta(product);
-  db.products.push(record);
-  writeDb(db);
+  persistProduct(record);
   return clone(record);
 };
 
 const updateProduct = (id, updates) => {
-  const db = readDb();
-  const index = db.products.findIndex((product) => String(product._id) === String(id));
-  if (index === -1) return null;
-  db.products[index] = {
-    ...db.products[index],
+  const current = getProductById(id);
+  if (!current) return null;
+  const updated = {
+    ...current,
     ...updates,
-    updatedAt: new Date().toISOString(),
+    _id: current._id,
+    updatedAt: timestamp(),
   };
-  writeDb(db);
-  return clone(db.products[index]);
+  persistProduct(updated);
+  return clone(updated);
 };
 
 const deleteProduct = (id) => {
-  const db = readDb();
-  const index = db.products.findIndex((product) => String(product._id) === String(id));
-  if (index === -1) return false;
-  db.products.splice(index, 1);
-  writeDb(db);
-  return true;
+  const result = getDb().prepare("DELETE FROM products WHERE _id = ?").run(String(id));
+  return result.changes > 0;
 };
 
 const findUserByEmail = (email) =>
-  clone(readDb().users.find((user) => user.email === String(email).toLowerCase()));
+  clone(
+    mapUserRow(
+      getDb().prepare("SELECT * FROM users WHERE email = ?").get(String(email).toLowerCase())
+    )
+  );
+
 const findUserById = (id) =>
-  clone(readDb().users.find((user) => String(user._id) === String(id)));
+  clone(mapUserRow(getDb().prepare("SELECT * FROM users WHERE _id = ?").get(String(id))));
 
 const createUser = (user) => {
-  const db = readDb();
   const record = withMeta({
     ...user,
     email: String(user.email).toLowerCase(),
   });
-  db.users.push(record);
-  writeDb(db);
+  persistUser(record);
   return clone(record);
 };
 
 const updateUser = (id, updates) => {
-  const db = readDb();
-  const index = db.users.findIndex((user) => String(user._id) === String(id));
-  if (index === -1) return null;
-  db.users[index] = {
-    ...db.users[index],
+  const current = findUserById(id);
+  if (!current) return null;
+  const updated = {
+    ...current,
     ...updates,
-    updatedAt: new Date().toISOString(),
+    _id: current._id,
+    email: current.email,
+    updatedAt: timestamp(),
   };
-  writeDb(db);
-  return clone(db.users[index]);
+  persistUser(updated);
+  return clone(updated);
 };
 
 const createOrder = (order) => {
-  const db = readDb();
   const record = withMeta(order);
-  db.orders.unshift(record);
-  writeDb(db);
+  persistOrder(record);
   return clone(record);
 };
 
 const getOrdersByUser = (userId) =>
-  clone(readDb().orders.filter((order) => String(order.user) === String(userId)));
-const getOrderById = (id, userId = null) =>
   clone(
-    readDb().orders.find(
-      (order) =>
-        String(order._id) === String(id) &&
-        (userId ? String(order.user) === String(userId) : true)
-    )
+    getDb()
+      .prepare("SELECT * FROM orders WHERE user = ?")
+      .all(String(userId))
+      .map(mapOrderRow)
   );
-const getAllOrders = () => clone(readDb().orders);
+
+const getOrderById = (id, userId = null) => {
+  const row = userId
+    ? getDb().prepare("SELECT * FROM orders WHERE _id = ? AND user = ?").get(String(id), String(userId))
+    : getDb().prepare("SELECT * FROM orders WHERE _id = ?").get(String(id));
+  return clone(mapOrderRow(row));
+};
+
+const getAllOrders = () =>
+  clone(getDb().prepare("SELECT * FROM orders").all().map(mapOrderRow));
 
 const createBooking = (booking) => {
-  const db = readDb();
   const record = withMeta(booking);
-  db.bookings.unshift(record);
-  writeDb(db);
+  persistBooking(record);
   return clone(record);
 };
 
 const getBookingsByUser = (userId) =>
-  clone(readDb().bookings.filter((booking) => String(booking.user) === String(userId)));
-const getBookingById = (id, userId = null) =>
   clone(
-    readDb().bookings.find(
-      (booking) =>
-        String(booking._id) === String(id) &&
-        (userId ? String(booking.user) === String(userId) : true)
-    )
+    getDb()
+      .prepare("SELECT * FROM bookings WHERE user = ?")
+      .all(String(userId))
+      .map(mapBookingRow)
   );
+
+const getBookingById = (id, userId = null) => {
+  const row = userId
+    ? getDb().prepare("SELECT * FROM bookings WHERE _id = ? AND user = ?").get(String(id), String(userId))
+    : getDb().prepare("SELECT * FROM bookings WHERE _id = ?").get(String(id));
+  return clone(mapBookingRow(row));
+};
+
 const getBookingsByProfessional = (professionalName) =>
-  clone(readDb().bookings.filter((booking) => booking.professional === professionalName));
-const getAllBookings = () => clone(readDb().bookings);
+  clone(
+    getDb()
+      .prepare("SELECT * FROM bookings WHERE professional = ?")
+      .all(professionalName)
+      .map(mapBookingRow)
+  );
+
+const getAllBookings = () =>
+  clone(getDb().prepare("SELECT * FROM bookings").all().map(mapBookingRow));
 
 const updateBooking = (id, updates) => {
-  const db = readDb();
-  const index = db.bookings.findIndex((booking) => String(booking._id) === String(id));
-  if (index === -1) return null;
-  db.bookings[index] = {
-    ...db.bookings[index],
+  const current = getBookingById(id);
+  if (!current) return null;
+  const updated = {
+    ...current,
     ...updates,
-    updatedAt: new Date().toISOString(),
+    _id: current._id,
+    updatedAt: timestamp(),
   };
-  writeDb(db);
-  return clone(db.bookings[index]);
+  persistBooking(updated);
+  return clone(updated);
 };
 
-const getCounts = () => {
-  const db = readDb();
-  return {
-    users: db.users.length,
-    products: db.products.length,
-    orders: db.orders.length,
-    bookings: db.bookings.length,
-  };
-};
+const getCounts = () => ({
+  users: countRows("users"),
+  products: countRows("products"),
+  orders: countRows("orders"),
+  bookings: countRows("bookings"),
+});
 
 module.exports = {
   setFileStoreEnabled,

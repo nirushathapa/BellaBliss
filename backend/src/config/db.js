@@ -1,27 +1,18 @@
-const mongoose = require("mongoose");
+const path = require("path");
 const { setFileStoreEnabled } = require("../utils/fileStore");
 
 const connectDB = async () => {
-  const mongoUri = process.env.MONGODB_URI;
+  setFileStoreEnabled(true);
 
-  if (!mongoUri) {
-    console.warn("MONGODB_URI is not defined. Falling back to local file store.");
-    setFileStoreEnabled(true);
-    return false;
-  }
+  const dbFile = process.env.DATA_FILE
+    ? path.resolve(process.cwd(), process.env.DATA_FILE)
+    : path.join(__dirname, "..", "data", "blisss.sqlite");
+  console.log(`Using SQLite database at ${dbFile}`);
 
-  try {
-    await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000,
-    });
-    setFileStoreEnabled(false);
-    console.log("MongoDB connected");
-    return true;
-  } catch (error) {
-    console.warn("MongoDB unavailable. Falling back to local file store.");
-    setFileStoreEnabled(true);
-    return false;
-  }
+  return {
+    driver: "sqlite",
+    file: dbFile,
+  };
 };
 
 module.exports = connectDB;

@@ -18,7 +18,7 @@ function hasRole(role) {
 // Redirect if not logged in
 function requireAuth() {
     if (!isLoggedIn()) {
-        window.location.href = '/pages/auth/login.html';
+        navigateTo('pages/auth/login.html');
         return false;
     }
     return true;
@@ -27,16 +27,16 @@ function requireAuth() {
 // Redirect if not admin
 function requireAdmin() {
     if (!isLoggedIn()) {
-        window.location.href = '/pages/auth/login.html';
+        navigateTo('pages/auth/login.html');
         return false;
     }
     
     const user = getCurrentUser();
     if (user.role !== 'admin') {
         if (user.role === 'professional') {
-            window.location.href = '/pages/professional/dashboard.html';
+            navigateTo('pages/professional/dashboard.html');
         } else {
-            window.location.href = '/index.html';
+            navigateTo('index.html');
         }
         return false;
     }
@@ -46,16 +46,16 @@ function requireAdmin() {
 // Redirect if not professional
 function requireProfessional() {
     if (!isLoggedIn()) {
-        window.location.href = '/pages/auth/login.html';
+        navigateTo('pages/auth/login.html');
         return false;
     }
     
     const user = getCurrentUser();
     if (user.role !== 'professional') {
         if (user.role === 'admin') {
-            window.location.href = '/pages/admin/dashboard.html';
+            navigateTo('pages/admin/dashboard.html');
         } else {
-            window.location.href = '/index.html';
+            navigateTo('index.html');
         }
         return false;
     }
@@ -100,7 +100,7 @@ function updateNavigation() {
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/index.html';
+    navigateTo('index.html');
 }
 
 // Update cart count
@@ -146,7 +146,7 @@ function saveCartItem(product, quantity = 1) {
 function addToCart(product, quantity = 1) {
     if (!isLoggedIn()) {
         if (confirm('Please login to add items to cart')) {
-            window.location.href = '/pages/auth/login.html';
+            navigateTo('pages/auth/login.html');
         }
         return;
     }

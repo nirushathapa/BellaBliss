@@ -15,13 +15,13 @@ async function login(email, password) {
         // Redirect based on role
         switch(user.role) {
             case 'admin':
-                window.location.href = '/pages/admin/dashboard.html';
+                navigateTo('pages/admin/dashboard.html');
                 break;
             case 'professional':
-                window.location.href = '/pages/professional/dashboard.html';
+                navigateTo('pages/professional/dashboard.html');
                 break;
             default:
-                window.location.href = '/index.html';
+                navigateTo('index.html');
         }
         
         return { success: true };
@@ -39,7 +39,7 @@ function requireAuth(roles = []) {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     
     if (!token) {
-        window.location.href = '/pages/login.html';
+        navigateTo('pages/auth/login.html');
         return false;
     }
     
@@ -47,13 +47,13 @@ function requireAuth(roles = []) {
         // Redirect to appropriate dashboard
         switch(user.role) {
             case 'admin':
-                window.location.href = '/pages/admin/dashboard.html';
+                navigateTo('pages/admin/dashboard.html');
                 break;
             case 'professional':
-                window.location.href = '/pages/professional/dashboard.html';
+                navigateTo('pages/professional/dashboard.html');
                 break;
             default:
-                window.location.href = '/index.html';
+                navigateTo('index.html');
         }
         return false;
     }

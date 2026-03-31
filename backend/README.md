@@ -1,13 +1,12 @@
 # Blisss Backend
 
-This folder contains a basic MERN-ready backend for your frontend-only project.
+This folder contains the Express backend for the Blisss frontend project.
 
 ## Stack
 
 - Node.js
 - Express
-- MongoDB
-- Mongoose
+- SQLite (`src/data/blisss.sqlite`)
 
 ## Setup
 
@@ -24,7 +23,7 @@ npm install
 cp .env.example .env
 ```
 
-4. Update `MONGODB_URI` in `.env`
+4. Adjust `DATA_FILE` in `.env` if you want the SQLite database somewhere else
 5. Start the backend:
 
 ```bash
@@ -37,6 +36,10 @@ npm run dev
 - `GET /api/products`
 - `GET /api/products/:slug`
 - `POST /api/products`
+
+## Notes
+
+- On first run, the app migrates data from the legacy `src/data/local-db.json` file into SQLite if that JSON file exists.
 
 ## Example Product Payload
 

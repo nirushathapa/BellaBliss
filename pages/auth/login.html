@@ -190,8 +190,9 @@
         </form>
     </div>
 
+    <script src="../../js/api.js"></script>
     <script>
-        const API_BASE_URL = 'http://localhost:5000/api';
+        const API_BASE_URL = window.API_URL || 'http://localhost:5000/api';
 
         async function parseApiResponse(response) {
             const contentType = response.headers.get('content-type') || '';
@@ -277,7 +278,10 @@
                 }, 1000);
             } catch (error) {
                 console.error('Login error:', error);
-                showMessage(error.message || 'Cannot connect to server. Please try again.', 'error');
+                showMessage(
+                    error.message || 'Cannot connect to the backend server at http://localhost:5000. Start the backend and try again.',
+                    'error'
+                );
             }
         }
         
