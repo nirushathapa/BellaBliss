@@ -11,6 +11,19 @@ function getApiBaseUrl() {
     return "http://localhost:5000/api";
 }
 
+function getApiBaseUrls() {
+    const primaryUrl = getApiBaseUrl();
+    const urls = [primaryUrl];
+
+    if (primaryUrl.includes('localhost')) {
+        urls.push(primaryUrl.replace('localhost', '127.0.0.1'));
+    } else if (primaryUrl.includes('127.0.0.1')) {
+        urls.push(primaryUrl.replace('127.0.0.1', 'localhost'));
+    }
+
+    return [...new Set(urls)];
+}
+
 const API_URL = getApiBaseUrl();
 
 function getRootRelativePath(path) {
@@ -54,19 +67,29 @@ function renderStars(rating = 0) {
 }
 
 async function fetchFromApi(path) {
-    let response;
-
-    try {
-        response = await fetch(`${API_URL}${path}`);
-    } catch (error) {
-        throw new Error('Cannot connect to the backend server at http://localhost:5000. Start the backend and try again.');
-    }
+    const response = await requestFromApi(path);
 
     if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
     }
 
     return response.json();
+}
+
+async function requestFromApi(path, options = {}) {
+    const candidateUrls = getApiBaseUrls();
+    let lastError = null;
+
+    for (const baseUrl of candidateUrls) {
+        try {
+            const response = await fetch(`${baseUrl}${path}`, options);
+            return response;
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw new Error(`Cannot connect to the backend server at ${candidateUrls[0]}. Start the backend and try again.`);
 }
 
 function getProductImage(product) {

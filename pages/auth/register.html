@@ -247,8 +247,6 @@
 
     <script src="../../js/api.js"></script>
     <script>
-        const API_BASE_URL = window.API_URL || 'http://localhost:5000/api';
-
         async function parseApiResponse(response) {
             const contentType = response.headers.get('content-type') || '';
             if (contentType.includes('application/json')) {
@@ -354,7 +352,7 @@
             }
 
             try {
-                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                const response = await requestFromApi('/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -364,7 +362,7 @@
 
                 const result = await parseApiResponse(response);
 
-                if (!response.ok || !result.success) {
+                if (!result.success) {
                     showMessage(result.message || 'Registration failed', 'error');
                     return;
                 }
@@ -384,7 +382,7 @@
             } catch (error) {
                 console.error('Registration error:', error);
                 showMessage(
-                    error.message || 'Cannot connect to the backend server at http://localhost:5000. Start the backend and try again.',
+                    error.message || `Cannot connect to the backend server at ${API_URL}. Start the backend and try again.`,
                     'error'
                 );
             }

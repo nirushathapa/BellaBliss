@@ -11,6 +11,19 @@ const DEFAULT_LEGACY_JSON_FILE = path.join(__dirname, "..", "data", "local-db.js
 let fileStoreEnabled = false;
 let db;
 
+const BOOKING_COLUMNS = [
+  ["serviceId", "TEXT"],
+  ["duration", "TEXT"],
+  ["location", "TEXT"],
+  ["locationType", "TEXT"],
+  ["address", "TEXT"],
+  ["homeFee", "REAL DEFAULT 0"],
+  ["total", "REAL DEFAULT 0"],
+  ["paymentMethod", "TEXT"],
+  ["userName", "TEXT"],
+  ["userPhone", "TEXT"],
+];
+
 const getDbFile = () =>
   process.env.DATA_FILE
     ? path.resolve(process.cwd(), process.env.DATA_FILE)
@@ -118,20 +131,40 @@ const getDb = () => {
     CREATE TABLE IF NOT EXISTS bookings (
       _id TEXT PRIMARY KEY,
       user TEXT NOT NULL,
+      serviceId TEXT,
       service TEXT,
       professional TEXT,
       date TEXT,
       time TEXT,
+      duration TEXT,
+      location TEXT,
+      locationType TEXT,
+      address TEXT,
       price REAL DEFAULT 0,
+      homeFee REAL DEFAULT 0,
+      total REAL DEFAULT 0,
+      paymentMethod TEXT,
       paymentStatus TEXT,
       status TEXT,
       notes TEXT,
       customerName TEXT,
+      userName TEXT,
+      userPhone TEXT,
       userEmail TEXT,
       createdAt TEXT NOT NULL,
       updatedAt TEXT NOT NULL
     );
   `);
+
+  const existingBookingColumns = new Set(
+    db.prepare("PRAGMA table_info(bookings)").all().map((column) => column.name)
+  );
+
+  for (const [name, type] of BOOKING_COLUMNS) {
+    if (!existingBookingColumns.has(name)) {
+      db.exec(`ALTER TABLE bookings ADD COLUMN ${name} ${type}`);
+    }
+  }
 
   return db;
 };
@@ -172,6 +205,9 @@ const mapBookingRow = (row) => {
   return {
     ...row,
     price: Number(row.price || 0),
+    homeFee: Number(row.homeFee || 0),
+    total: Number(row.total || 0),
+    address: parseJson(row.address, null),
   };
 };
 
@@ -261,8 +297,8 @@ const insertOrder = getDb().prepare(`
 
 const insertBooking = getDb().prepare(`
   INSERT OR REPLACE INTO bookings
-  (_id, user, service, professional, date, time, price, paymentStatus, status, notes, customerName, userEmail, createdAt, updatedAt)
-  VALUES (@_id, @user, @service, @professional, @date, @time, @price, @paymentStatus, @status, @notes, @customerName, @userEmail, @createdAt, @updatedAt)
+  (_id, user, serviceId, service, professional, date, time, duration, location, locationType, address, price, homeFee, total, paymentMethod, paymentStatus, status, notes, customerName, userName, userPhone, userEmail, createdAt, updatedAt)
+  VALUES (@_id, @user, @serviceId, @service, @professional, @date, @time, @duration, @location, @locationType, @address, @price, @homeFee, @total, @paymentMethod, @paymentStatus, @status, @notes, @customerName, @userName, @userPhone, @userEmail, @createdAt, @updatedAt)
 `);
 
 const persistUser = (user) => {
@@ -297,9 +333,19 @@ const persistOrder = (order) => {
 const persistBooking = (booking) => {
   insertBooking.run({
     ...withMeta(booking),
+    serviceId: booking.serviceId || "",
+    duration: booking.duration || "",
+    location: booking.location || "",
+    locationType: booking.locationType || "",
+    address: JSON.stringify(booking.address || null),
     price: Number(booking.price || 0),
+    homeFee: Number(booking.homeFee || 0),
+    total: Number(booking.total || booking.price || 0),
+    paymentMethod: booking.paymentMethod || "",
     notes: booking.notes || "",
-    customerName: booking.customerName || booking.name || "",
+    customerName: booking.customerName || booking.userName || booking.name || "",
+    userName: booking.userName || booking.customerName || booking.name || "",
+    userPhone: booking.userPhone || "",
     userEmail: booking.userEmail || booking.email || "",
   });
 };
